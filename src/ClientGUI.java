@@ -61,6 +61,10 @@ public class ClientGUI {
         headingLabel.setForeground(Color.BLUE);
 
         // Create components
+        JLabel IPLabel = new JLabel("IP:");
+        IPLabel.setForeground(Color.LIGHT_GRAY);
+        JTextField IPField = new JTextField(20);
+
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setForeground(Color.LIGHT_GRAY);
 
@@ -71,6 +75,7 @@ public class ClientGUI {
         JPasswordField passwordField = new JPasswordField(20);
         JButton loginButton = new JButton("Login");
         JLabel registerLabel = new JLabel("<html><a href='#'>Not registered? Register</a></html>");
+        JButton ConectButton = new JButton("Connect");
 
         // GridBagLayout constraints
         GridBagConstraints gbc = new GridBagConstraints();
@@ -85,40 +90,52 @@ public class ClientGUI {
         gbc.anchor = GridBagConstraints.CENTER; // Ensure center alignment
         loginFrame.add(headingLabel, gbc);
 
-        // Add username label
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.CENTER; // Center-align the label
+        gbc.anchor = GridBagConstraints.CENTER;
+        loginFrame.add(IPLabel, gbc);
+
+        gbc.gridx =0;
+        gbc.gridy =2;
+        loginFrame.add(IPField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        loginFrame.add(ConectButton, gbc);
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         loginFrame.add(usernameLabel, gbc);
 
         // Add username field
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 5;
         loginFrame.add(usernameField, gbc);
 
         // Add password label
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 6;
         loginFrame.add(passwordLabel, gbc);
 
         // Add password field
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 7;
         loginFrame.add(passwordLabel, gbc);
 
         // Add password field
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 8;
         loginFrame.add(passwordField, gbc);
 
         // Add login button
         gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy = 9;
         loginFrame.add(loginButton, gbc);
 
         // Add register link
         gbc.gridx = 0;
-        gbc.gridy = 7;
+        gbc.gridy = 10;
         loginFrame.add(registerLabel, gbc);
 
         // Action listener for login button
@@ -267,3 +284,14 @@ public class ClientGUI {
     }
 
 }
+//add when user clicks enter on their keyboard it should work
+// find how to make server work with client ask prof on how to do that
+
+//use mysql workbech connect (check mark it in sql) the database add a query to the gui
+//do it as seprate object
+//connection thread and user interface goes to see whos logged in whos logged out talks to the database
+//databse object everything static
+
+
+//add IP section
+
