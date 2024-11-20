@@ -1,3 +1,5 @@
+import server.Server;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -14,10 +16,8 @@ public class ServerGUI {
     private DefaultListModel<String> loggedInUsersModel;
     private JButton stopServerButton;
 
-    private static final int PORT = 12345;
     private Map<String, String> accounts = new HashMap<>(); // Mock accounts storage (username -> password)
     private Set<String> loggedInUsers = new HashSet<>(); // Set of logged-in usernames
-    private ServerSocket serverSocket;
     private boolean isRunning = true;
 
     public static void main(String[] args) {
@@ -96,22 +96,8 @@ public class ServerGUI {
     }
 
     private void startServer() {
-        new Thread(() -> {
-            try {
-                serverSocket = new ServerSocket(PORT);
-                log("Server started on port " + PORT);
-
-                while (isRunning) {
-                    Socket clientSocket = serverSocket.accept();
-                    log("New client connected: " + clientSocket.getInetAddress());
-                    new ClientHandler(clientSocket).start();
-                }
-            } catch (IOException e) {
-                log("Server stopped.");
-            }
-        }).start();
+        Server.startServer();
     }
-
     private void stopServer() {
         isRunning = false;
         connectionStatusLabel.setText("Connection Status: Stopped");
