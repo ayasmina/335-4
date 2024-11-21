@@ -19,7 +19,7 @@ public class Client {
     public void disconnect() {
         if (isConnected) {
             isConnected = false;
-            isLoggedIn = false;  // Automatically log out on disconnect
+            isLoggedIn = false; // Automatically log out on disconnect
             System.out.println("Disconnected from " + host);
         } else {
             System.out.println("Not connected.");
@@ -53,7 +53,23 @@ public class Client {
             System.out.println("Please connect to the server first.");
         }
     }
+
+    // New recoverPassword method
+    public void recoverPassword(String username) {
+        if (isConnected) {
+            // Simulate sending a temporary password to the user's registered email
+            String tempPassword = "Temp1234"; // Temporary password for demonstration purposes
+            System.out.println("Temporary password sent to the email associated with username: " + username);
+            System.out.println("Temporary password: " + tempPassword); // In real applications, do not log sensitive data
+        } else {
+            System.out.println("Please connect to the server first.");
+        }
+    }
+
+    // Connection status method
+    public void printConnectionStatus() {
+        System.out.println("Server: " + host);
+        System.out.println("Connected: " + isConnected);
+        System.out.println("Logged In: " + isLoggedIn);
+    }
 }
-//add forgot password ??????!!!!!!!
-//once u log in
-//whos on how many acc are logged in how many accounts are not/ connection status

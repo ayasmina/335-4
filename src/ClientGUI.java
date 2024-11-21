@@ -2,14 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.IOException;
 
 public class ClientGUI {
     private Client client;
     private JFrame loginFrame;
+    private JFrame ForgottenpassFrame;
     private JFrame registerFrame;
 
     public static void main(String[] args) {
@@ -51,13 +52,11 @@ public class ClientGUI {
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(500, 500);
         loginFrame.setLayout(new GridBagLayout()); // Use GridBagLayout for centering
-        // Show the login frame
         loginFrame.setVisible(true);
 
         JLabel headingLabel = new JLabel("LOGIN");
-        headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24)); // Set font to bold and size 24
-        headingLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
-        //changing the color for login to blue thank god i finally found how
+        headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+        headingLabel.setHorizontalAlignment(SwingConstants.CENTER);
         headingLabel.setForeground(Color.BLUE);
 
         // Create components
@@ -67,75 +66,56 @@ public class ClientGUI {
 
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setForeground(Color.LIGHT_GRAY);
-
         JTextField usernameField = new JTextField(20);
+
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(Color.LIGHT_GRAY);
-        ;
         JPasswordField passwordField = new JPasswordField(20);
+
         JButton loginButton = new JButton("Login");
         JLabel registerLabel = new JLabel("<html><a href='#'>Not registered? Register</a></html>");
+        JLabel ForgottenpassLabel = new JLabel("<html><a href='#'>Forgot Password?</a></html>");
         JButton ConectButton = new JButton("Connect");
 
         // GridBagLayout constraints
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(20, 20, 20, 20); // Add padding around components
-
-        // Add heading label at the top using GridBagLayout constraints
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(20, 20, 20, 20);
         gbc.insets = new Insets(10, 10, 10, 10); // Add padding
-        gbc.gridx = 0; // Center horizontally
-        gbc.gridy = 0; // Place at the top
-        gbc.anchor = GridBagConstraints.CENTER; // Ensure center alignment
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.CENTER;
         loginFrame.add(headingLabel, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridy++;
         loginFrame.add(IPLabel, gbc);
 
-        gbc.gridx =0;
-        gbc.gridy =2;
+        gbc.gridy++;
         loginFrame.add(IPField, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy++;
         loginFrame.add(ConectButton, gbc);
 
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy++;
         loginFrame.add(usernameLabel, gbc);
 
-        // Add username field
-        gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy++;
         loginFrame.add(usernameField, gbc);
 
-        // Add password label
-        gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridy++;
         loginFrame.add(passwordLabel, gbc);
 
-        // Add password field
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        loginFrame.add(passwordLabel, gbc);
-
-        // Add password field
-        gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridy++;
         loginFrame.add(passwordField, gbc);
 
-        // Add login button
-        gbc.gridx = 0;
-        gbc.gridy = 9;
+        gbc.gridy++;
         loginFrame.add(loginButton, gbc);
 
-        // Add register link
-        gbc.gridx = 0;
-        gbc.gridy = 10;
+        gbc.gridy++;
+        loginFrame.add(ForgottenpassLabel, gbc);
+
+        gbc.gridy++;
         loginFrame.add(registerLabel, gbc);
 
         // Action listener for login button
@@ -144,148 +124,210 @@ public class ClientGUI {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                client.connect(); // Attempt to connect first
-                client.login(username, password);
-                JOptionPane.showMessageDialog(loginFrame, "Logged in as " + username);
+                if (!username.isEmpty() && !password.isEmpty()) {
+                    client.connect(); // Attempt to connect first
+                    client.login(username, password);
+                    JOptionPane.showMessageDialog(loginFrame, "Logged in as " + username);
+                } else {
+                    JOptionPane.showMessageDialog(loginFrame, "Please fill in all fields!", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
-        // Action listener for register link
+        // Action listener for Forgotten Password link
+        ForgottenpassLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                openForgottenPassWindow();
+            }
+        });
+
+        // Action listener for Register link
         registerLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 openRegisterWindow();
             }
-
         });
 
-
-// Add heading label at the top using GridBagLayout constraints
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10); // Add padding
-        gbc.gridx = 0; // Center horizontally
-        gbc.gridy = 0; // Place at the top
-        gbc.anchor = GridBagConstraints.CENTER; // Ensure center alignment
-        loginFrame.add(headingLabel, gbc);
+        // Add Enter key listener to Login button
+        loginFrame.getRootPane().setDefaultButton(loginButton);
     }
 
-    // Method to open the registration window
-    // Method to open the registration window
-    private void openRegisterWindow() {
-        // Set up the registration frame with background image
-        String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update the path as needed
-        registerFrame = new JFrame("Register") {
-            {
-                setContentPane(new BackgroundPanel(registerBackgroundPath));
-            }
-        };
-        registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close only this frame when closed
-        registerFrame.setSize(550, 550);
-        registerFrame.setLayout(new GridBagLayout()); // Use GridBagLayout for centering
-        registerFrame.setVisible(true);
-        registerFrame.setLocation(500, 300); // Example position (x: 500, y: 300)
+    private void openForgottenPassWindow() {
+        String forgottenPassBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update as needed
+        ForgottenpassFrame = new JFrame("Recovery");
+        ForgottenpassFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ForgottenpassFrame.setContentPane(new BackgroundPanel(forgottenPassBackgroundPath));
+        ForgottenpassFrame.setSize(500, 500);
+        ForgottenpassFrame.setLayout(new GridBagLayout());
 
-        JLabel headingLabel = new JLabel("REGISTER");
-        headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24)); // Set font to bold and size 24
-        headingLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
-        headingLabel.setForeground(Color.BLUE); // Changing the color to gray
+        JLabel headingLabel = new JLabel("RECOVERY");
+        headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+        headingLabel.setForeground(Color.BLUE);
 
-        JLabel emailLabel = new JLabel("Email:");
-        emailLabel.setForeground(Color.LIGHT_GRAY);
-
-        JPasswordField passwordField = new JPasswordField(20);
-        JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setForeground(Color.LIGHT_GRAY);
         JTextField usernameField = new JTextField(20);
-        JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setForeground(Color.LIGHT_GRAY);
-        JTextField emailField = new JTextField(20);
-        JButton registerButton = new JButton("Register");
+        JButton recoverButton = new JButton("Recover");
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(20, 20, 20, 20); // Add padding around components
-
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(10, 10, 10, 10); // Add padding
-        gbc.gridx = 0; // Center horizontally
-        gbc.gridy = 0; // Place at the top
-        gbc.anchor = GridBagConstraints.CENTER; // Ensure center alignment
-        registerFrame.add(headingLabel, gbc);
+        gbc.insets = new Insets(10, 10, 10, 10);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        registerFrame.add(emailLabel, gbc);
+        gbc.gridy = 0;
+        ForgottenpassFrame.add(headingLabel, gbc);
 
-        // Add email field
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        registerFrame.add(emailField, gbc);
+        gbc.gridy++;
+        ForgottenpassFrame.add(new JLabel("Username:"), gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        registerFrame.add(usernameLabel, gbc);
+        gbc.gridy++;
+        ForgottenpassFrame.add(usernameField, gbc);
 
-        // Add username field
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        registerFrame.add(usernameField, gbc);
+        gbc.gridy++;
+        ForgottenpassFrame.add(recoverButton, gbc);
 
-        // Add password label
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        registerFrame.add(passwordLabel, gbc);
-
-        // Add password field
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        registerFrame.add(passwordField, gbc);
-
-        // Add register button
-        gbc.gridx = 0;
-        gbc.gridy = 7;
-        registerFrame.add(registerButton, gbc);
-
-        // Action listener for register button
-        registerButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String username = usernameField.getText();
-                String password = new String(passwordField.getPassword());
-                String email = emailField.getText();
-
-                client.connect(); // Attempt to connect first if not connected
-                client.register(username, password, email);
-                JOptionPane.showMessageDialog(registerFrame, "Registered successfully as " + username);
-
-                // Close the registration frame
-                registerFrame.dispose();
+        recoverButton.addActionListener((ActionEvent e) -> {
+            String username = usernameField.getText();
+            if (!username.isEmpty()) {
+                client.connect();
+                client.recoverPassword(username);
+                JOptionPane.showMessageDialog(ForgottenpassFrame, "Recovery email sent to your registered email.");
+            } else {
+                JOptionPane.showMessageDialog(ForgottenpassFrame, "Please enter a username!", "Error", JOptionPane.ERROR_MESSAGE);
             }
+            ForgottenpassFrame.dispose();
         });
 
-        // Show the registration frame
-        registerFrame.setLocation(500, 300); // Example position (x: 500, y: 200)
-        registerFrame.setVisible(true);
+        ForgottenpassFrame.setVisible(true);
+        ForgottenpassFrame.getRootPane().setDefaultButton(recoverButton);
     }
-    // add backround
-    public class SwingDemo extends JFrame {
-        Image img = Toolkit.getDefaultToolkit().getImage("/Users/yasmine/Downloads/background.jpg");
 
-        public SwingDemo() {
-            this.setContentPane(new JPanel() {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+
+// Method to open the registration window
+        // Method to open the registration window
+        private void openRegisterWindow () {
+            // Set up the registration frame with background image
+            String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update the path as needed
+            registerFrame = new JFrame("Register") {
+                {
+                    setContentPane(new BackgroundPanel(registerBackgroundPath));
+                }
+            };
+            registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Close only this frame when closed
+            registerFrame.setSize(550, 550);
+            registerFrame.setLayout(new GridBagLayout()); // Use GridBagLayout for centering
+            registerFrame.setVisible(true);
+            registerFrame.setLocation(500, 300); // Example position (x: 500, y: 300)
+
+            JLabel headingLabel = new JLabel("REGISTER");
+            headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24)); // Set font to bold and size 24
+            headingLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center-align the text
+            headingLabel.setForeground(Color.BLUE); // Changing the color to gray
+
+            JLabel emailLabel = new JLabel("Email:");
+            emailLabel.setForeground(Color.LIGHT_GRAY);
+
+            JPasswordField passwordField = new JPasswordField(20);
+            JLabel usernameLabel = new JLabel("Username:");
+            JTextField usernameField = new JTextField(20);
+            usernameLabel.setForeground(Color.LIGHT_GRAY);
+            JLabel passwordLabel = new JLabel("Password:");
+            passwordLabel.setForeground(Color.LIGHT_GRAY);
+            JTextField emailField = new JTextField(20);
+            JButton registerButton = new JButton("Register");
+
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(20, 20, 20, 20); // Add padding around components
+
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(10, 10, 10, 10); // Add padding
+            gbc.gridx = 0; // Center horizontally
+            gbc.gridy = 0; // Place at the top
+            gbc.anchor = GridBagConstraints.CENTER; // Ensure center alignment
+            registerFrame.add(headingLabel, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            registerFrame.add(emailLabel, gbc);
+
+            // Add email field
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            registerFrame.add(emailField, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 3;
+            registerFrame.add(usernameLabel, gbc);
+
+            // Add username field
+            gbc.gridx = 0;
+            gbc.gridy = 4;
+            registerFrame.add(usernameField, gbc);
+
+            // Add password label
+            gbc.gridx = 0;
+            gbc.gridy = 5;
+            registerFrame.add(passwordLabel, gbc);
+
+            // Add password field
+            gbc.gridx = 0;
+            gbc.gridy = 6;
+            registerFrame.add(passwordField, gbc);
+
+            // Add register button
+            gbc.gridx = 0;
+            gbc.gridy = 7;
+            registerFrame.add(registerButton, gbc);
+
+            // Action listener for register button
+            registerButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String username = usernameField.getText();
+                    String password = new String(passwordField.getPassword());
+                    String email = emailField.getText();
+
+                    client.connect(); // Attempt to connect first if not connected
+                    client.register(username, password, email);
+                    JOptionPane.showMessageDialog(registerFrame, "Registered successfully as " + username);
+
+                    // Close the registration frame
+                    registerFrame.dispose();
                 }
             });
-            setSize(800, 600);
-            setLocationRelativeTo(null);
-            setVisible(true);
+
+            // Show the registration frame
+            registerFrame.setLocation(500, 300); // Example position (x: 500, y: 200)
+            registerFrame.setVisible(true);
+            registerFrame.getRootPane().setDefaultButton(registerButton);
         }
+        // add backround
+        public class SwingDemo extends JFrame {
+            Image img = Toolkit.getDefaultToolkit().getImage("/Users/yasmine/Downloads/background.jpg");
+
+            public SwingDemo() {
+                this.setContentPane(new JPanel() {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+                    }
+                });
+                setSize(800, 600);
+                setLocationRelativeTo(null);
+                setVisible(true);
+            }
+        }
+
     }
 
-}
+// username
+// once it works conf message 'temporary password sent to x email'
+
+
+// add forgot password
+
 //add when user clicks enter on their keyboard it should work
 // find how to make server work with client ask prof on how to do that
+
+//server
 
 //use mysql workbech connect (check mark it in sql) the database add a query to the gui
 //do it as seprate object
@@ -293,5 +335,6 @@ public class ClientGUI {
 //databse object everything static
 
 
-//add IP section
+//add IP section + button  - DONE
 
+//change jlabel
