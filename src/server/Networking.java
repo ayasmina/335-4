@@ -62,7 +62,7 @@ public class Networking extends Thread {
                     clientIsConnected = false;
                 }   //  End If
                 else if (txtOut.equals("validUsername")) {
-                    dataout.writeBytes("Valid username!");
+                    dataout.writeBytes("Valid username!" + "\n");
                     dataout.flush();
                 }   //  End Else If
                 else if (txtOut.equals("validPassword")) {
