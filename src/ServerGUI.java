@@ -97,20 +97,14 @@ public class ServerGUI {
 
     private void startServer() {
         Server.startServer();
+
     }
     private void stopServer() {
         isRunning = false;
         connectionStatusLabel.setText("Connection Status: Stopped");
         connectionStatusLabel.setForeground(Color.RED);
         stopServerButton.setEnabled(false);
-
-        try {
-            if (serverSocket != null && !serverSocket.isClosed()) {
-                serverSocket.close();
-            }
-        } catch (IOException e) {
-            log("Error stopping server: " + e.getMessage());
-        }
+        Server.stopServer();
     }
 
     private void log(String message) {
