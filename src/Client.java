@@ -2,8 +2,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Client {
-    private String HOST;
-    private static final int PORT = 8000;
+    private static String HOST;
     private boolean isConnected = false;
     private boolean isLoggedIn = false;
     private String username;
@@ -12,37 +11,32 @@ public class Client {
     private String serverIP;
     private boolean passValid = false;
     private boolean emailValid = false;
-    private Socket socket;
 
+    // Connect Client to Client Network Object
     public Client(String host) {
-        try {
-            this.HOST = host;
-            socket = new Socket(HOST, PORT);
-        } catch (UnknownHostException | IOException e) {
-            System.out.println("Host: " + HOST + " at port " + PORT + " + is unavailable.");
+       Client.HOST = host;
+       Network clientConnection = new Network(HOST);
+    }
+
+    public void connect() {
+        if (!isConnected) {
+            isConnected = true;
+            System.out.println("Connected to " + HOST);
+        } else {
+            System.out.println("Already connected.");
         }
     }
-}
 
-//    public void connect() {
-//        if (!isConnected) {
-//            isConnected = true;
-//            System.out.println("Connected to " + HOST);
-//        } else {
-//            System.out.println("Already connected.");
-//        }
-//    }
+    public void disconnect() {
+        if (isConnected) {
+            isConnected = false;
+            isLoggedIn = false;  // Automatically log out on disconnect
+            System.out.println("Disconnected from " + HOST);
 
-//    public void disconnect() {
-//        if (isConnected) {
-//            isConnected = false;
-//            isLoggedIn = false;  // Automatically log out on disconnect
-//            System.out.println("Disconnected from " + HOST);
-//
-//        } else {
-//            System.out.println("Not connected.");
-//        }
-//    }
+        } else {
+            System.out.println("Not connected.");
+        }
+    }
 
 //    public void login(String username, String password) {
 //        if (isConnected && !isLoggedIn) {
@@ -71,7 +65,7 @@ public class Client {
 //            System.out.println("Please connect to the server first.");
 //        }
 //    }
-//}
+}
 //add forgot password ??????!!!!!!!
 //once u log in
 //whos on how many acc are logged in how many accounts are not/ connection status
