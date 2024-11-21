@@ -48,6 +48,7 @@ public class Networking extends Thread {
                 // If connection is accepted then create a peer-to-peer socket
                 peerConnection(server);
             }   //  End While (true)
+
         }   //  End Try
         catch(IOException e) {
             e.printStackTrace();    //  !!!POTENTIAL PROBLEM!!!
