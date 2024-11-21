@@ -3,12 +3,58 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+
 public class Server {
+    private static int nextId = 0;
     public Server() {
         // Construct the list of active client threads
         clientconnections = new Vector<>();
         // Listen for incoming connection requests
-        Networking.
+        listen();
+    }
+    private void peerConnection(Socket socket) {
+        // Create a thread communication when client arrives
+        Networking connection = new Networking(nextId, socket, this);
+        // Add the new thread to the active client threads list
+        clientconnections.add(connection);
+        // Start the thread
+        connection.start();
+        // Place some text in the area to let the server operator know what is going on
+        System.out.println("SERVER: connection received for id " + nextId + "\n");
+        ++nextId;
+    }
+    public static void removeID(int id) {
+        // Find the object belonging to the client thread being terminated
+        for (int i = 0; i < clientconnections.size(); ++i) {
+            Networking cc = clientconnections.get(i);
+            long x = cc.getId();
+            if (x == id) {
+                // -- remove it from the active threads list
+                //    the thread will terminate itself
+                clientconnections.remove(i);
+                // Place some text in the area to let the server operator know what is going on
+                System.out.println("SERVER: connection closed for client id " + id + "\n");
+                break;
+            }   //  End if(x == id)
+        }   //  End removeID(int id)
+    }
+    public void listen(){
+        try {
+            // Open the server socket
+            serversocket = new ServerSocket(Server.getPort());
+            // Server runs until we manually shut it down
+            while(true) {  //  Infinite Loop Created
+                // Block until a client comes along
+                Socket socket = serversocket.accept();
+                // If connection is accepted then create a peer-to-peer socket
+                peerConnection(socket);
+            }   //  End While (true)
+
+        }   //  End Try
+        catch(IOException e) {
+            e.printStackTrace();    //  !!!POTENTIAL PROBLEM!!!
+            System.exit(1);
+        }
     }
     public static Vector<Networking> clientconnections;
 
