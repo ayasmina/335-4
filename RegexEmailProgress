@@ -27,7 +27,7 @@ public class RegexEmail {
 
         // Password validation loop
         do {
-            System.out.println("Enter a password (no special characters): ");
+            System.out.println("Enter Password w/ Atleast 8 charecters, One upercase letter, One lowercase letter, & one #");
             search = kb.next();
             System.out.println((!validPassword(search) ? "Not a" : "A") + " valid password");
         } while (!validPassword(search));     
