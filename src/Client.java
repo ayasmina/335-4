@@ -9,6 +9,7 @@ public class Client {
     public Network clientConnection;
     private String response = "";
 
+    // Tester main so we don't have to launch the GUI every single time
     public static void main(String[] args){
         Client client = new Client("127.0.0.1");
         client.connect("127.0.0.1");
