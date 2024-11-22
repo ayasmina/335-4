@@ -13,13 +13,12 @@ public class Network extends Thread {
     private String name;
     private int id;
 
-    // handling peer to peer communication - I/O Streams
+    // handling peer to peer communication
     private BufferedReader datain;
     private DataOutputStream dataout;
 
     private Server server;
     private Socket socket;
-
 
     // In given code: this was the public Client() method in Client.java
     // Client Network Object
@@ -72,6 +71,7 @@ public class Network extends Thread {
     // Server -> Network - the return message from parseInput()
     public String send(String msg) {
         String rtnmsg = "";
+
         try {
             // send String to Server
             dataout.writeBytes(msg + "\n"); // write string to bytes
@@ -85,7 +85,6 @@ public class Network extends Thread {
                 // and ever if something is wrong
                 rtnmsg = datain.readLine();
             } while (rtnmsg.equals(""));
-
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -136,6 +135,7 @@ public class Network extends Thread {
                 go = false;
             }
         }
+
     }
 }
 

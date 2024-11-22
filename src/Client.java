@@ -1,7 +1,11 @@
-import java.io.IOException;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.regex.*;
 
 public class Client {
     private static String HOST;
+    private static final int PORT = 8000;
     private boolean isConnected = false;
     private boolean isLoggedIn = false;
     private boolean passValid = false;
@@ -26,6 +30,15 @@ public class Client {
         Client.HOST = host;
         Client client = new Client(HOST);
         if (!isConnected) { // replace this statement with something that checks the response
+            isConnected = true;
+            System.out.println("Connected to " + HOST);
+        } else {
+            System.out.println("Already connected.");
+        }
+    }
+
+    public void connect() {
+        if (!isConnected) {
             isConnected = true;
             System.out.println("Connected to " + HOST);
         } else {
@@ -75,7 +88,25 @@ public class Client {
             System.out.println("Please connect to the server first.");
         }
     }
+    // New recoverPassword method
+    public void recoverPassword(String username) {
+        if (isConnected) {
+            // Simulate sending a temporary password to the user's registered email
+            String tempPassword = "Temp1234"; // Temporary password for demonstration purposes
+            System.out.println("Temporary password sent to the email associated with username: " + username);
+            System.out.println("Temporary password: " + tempPassword); // In real applications, do not log sensitive data
+        } else {
+            System.out.println("Please connect to the server first.");
+        }
+    }
+
+    // Connection status method
+    public void printConnectionStatus() {
+        System.out.println("Server: " + HOST);
+        System.out.println("Connected: " + isConnected);
+        System.out.println("Logged In: " + isLoggedIn);
+    }
 }
-//add forgot password ??????!!!!!!!
+
 //once u log in
 //whos on how many acc are logged in how many accounts are not/ connection status
