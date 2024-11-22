@@ -1,10 +1,10 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 // Client: Send, then Receive/listen
 // Server: Receive/Listen then Send
-
-// Need to get the peerconnection and listen methods in this somehow
+// Alternating modes
 
 public class Network extends Thread {
     private static final int PORT = 8000;
@@ -12,7 +12,6 @@ public class Network extends Thread {
     private boolean go;
     private String name;
     private int id;
-    private int nextId;
 
     // handling peer to peer communication - I/O Streams
     private BufferedReader datain;
@@ -21,11 +20,9 @@ public class Network extends Thread {
     private Server server;
     private Socket socket;
 
-    // Create general network objects??
-    // Client Network Object holds socket and I/O streams?
-    // Server Network Object holds NetworkThread? - Do we need to put a NetworkThread class in here?
 
     // In given code: this was the public Client() method in Client.java
+    // Client Network Object
     public Network(String host){
         try {
             // -- construct the peer to peer socket
@@ -42,13 +39,9 @@ public class Network extends Thread {
         }
     }
 
-    public Network(ServerSocket server){
-
-    }
-
-
     //In given code: this was the ConnectionThread Constructor
     // -- creates I/O objects on top of the socket
+    // Server Network Object
     public Network(int id, Socket socket, Server server) {
         this.server = server;
         this.id = id;
@@ -64,37 +57,6 @@ public class Network extends Thread {
         }
     }
 
-    public void peerconnection(Socket socket) {
-        Network connection = new Network(nextId, socket, server);
-        clientconnections.add(connection);
-        connection.start();
-        System.out.println("SERVER: connection received for id " + nextId + "\n");
-        ++nextId;
-    }
-
-    public void listen()
-    {
-        try {
-            // -- open the server socket
-            serverSocket = new ServerSocket(getPort());
-
-            // -- server runs until we manually shut it down
-            while (true) {
-                // -- block until a client comes along
-                Socket socket = serverSocket.accept();
-
-                // -- connection accepted, create a peer-to-peer socket
-                //    between the server (thread) and client
-                peerconnection(socket);
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-
-        }
-    }
-
 //    public String toString() {
 //        return name;
 //    }
@@ -103,19 +65,27 @@ public class Network extends Thread {
 //        return name;
 //    }
 
-    public String sendString(String msg) {
-        String rtnmsg = "";
 
+    // ClientGUI -> Client -> Network -> Server -> Network -> Client -> ClientGUI
+    // Client -> Network - clientConnection.send(String)
+    // Network -> Server - server.parseInput(txtIn)
+    // Server -> Network - the return message from parseInput()
+    public String send(String msg) {
+        String rtnmsg = "";
         try {
             // send String to Server
-            dataout.writeBytes(msg + "\n");
-            dataout.flush();
+            dataout.writeBytes(msg + "\n"); // write string to bytes
+            dataout.flush(); // send string to server
 
-            // receive response from the Server
-            rtnmsg = "";
-            do {
+
+//            // receive response from the Server - automated - rn Server doesnt actually get the message
+            rtnmsg = ""; // empty string for response
+            do { // read for input while the response string is empty
+                socket.setSoTimeout(5000); // Timeout of 5 seconds - makes it so the client wont wait forever
+                // and ever if something is wrong
                 rtnmsg = datain.readLine();
             } while (rtnmsg.equals(""));
+
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -123,49 +93,49 @@ public class Network extends Thread {
         return rtnmsg;
     }
 
-// Does listen() go in here or Server?
+    public String receive(){
+        String res = "";
+      try {
+          res = datain.readLine();
+      } catch (IOException e){
+          e.printStackTrace();
+          System.exit(1);
+      }
+      return res;
+    }
 
-//    public static void listen() {
-//        try {
-//            serverSocket = new ServerSocket(getPort());
-//
-//            while (true) {
-//                Socket socket = serverSocket.accept();
-//
-//                peerconnection(socket);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-//    }
-
-
-    public void run() {
+    // Getting Broken Pipe Error After Pseudo Logging In
+    public void run () {
+        // Server thread runs until the client terminates the connection
         while (go) {
             try {
-                String txt = datain.readLine();
-                System.out.println("SERVER receive: " + txt);
+                /*  always receives a String object with a newline (\n)
+                    on the end due to how BufferedReader readLine() works.
+                    The client adds it to the user's string but the BufferedReader
+                    readLine() call strips it off   */
 
-                if (txt.equals("disconnect")) {
-                    datain.close();
-                    server.removeID(id);
-                    go = false;
-                } else if (txt.equals("hello")) {
+                // Using receive() instead of datain.readLine() cause...idk
+                String txtIn = receive();
+                System.out.println("SERVER receive: " + txtIn);
 
-                    dataout.writeBytes("world!" + "\n");
-                    dataout.flush();
-
+                // Sending txtIn to server instance of Server to parse the input and go through the operations
+                // txtOut is the response that parseInput returns after Server completes a process
+                String txtOut = server.parseInput(txtIn);
+                if (txtOut == null || txtOut.trim().isEmpty()) {
+                    System.out.println("Server response is empty!");
                 } else {
-                    System.out.println("unrecognized command >>" + txt + "<<");
-                    dataout.writeBytes(txt + "\n");
+                    System.out.println("SERVER responding: " + txtOut);
                 }
-            } catch (IOException e) {
+
+                // Sending response to client???
+               dataout.writeBytes(txtOut + "\n");
+               dataout.flush();
+            }   //  End Try
+            catch(IOException e) {
                 e.printStackTrace();
                 go = false;
             }
         }
-
     }
 }
 

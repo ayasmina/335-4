@@ -27,7 +27,7 @@ public class ServerGUI {
     public ServerGUI() {
         setupGUI();
         loadAccounts();
-        startServer();
+        //startServer();
     }
 
     private void setupGUI() {
@@ -67,7 +67,7 @@ public class ServerGUI {
         // Bottom panel: Stop server button
         JPanel bottomPanel = new JPanel();
         stopServerButton = new JButton("Stop Server");
-        stopServerButton.addActionListener(e -> stopServer());
+        //stopServerButton.addActionListener(e -> stopServer());
         bottomPanel.add(stopServerButton);
 
         // Add panels to the frame
@@ -94,119 +94,4 @@ public class ServerGUI {
     private void updateLoggedInCount() {
         loggedInUsersLabel.setText("Logged In Users: " + loggedInUsers.size());
     }
-
-//    private void startServer() {
-//        new Thread(() -> {
-//            try {
-//                serverSocket = new ServerSocket(PORT);
-//                log("Server started on port " + PORT);
-//
-//                while (isRunning) {
-//                    Socket clientSocket = serverSocket.accept();
-//                    log("New client connected: " + clientSocket.getInetAddress());
-//                    new ClientHandler(clientSocket).start();
-//                }
-//            } catch (IOException e) {
-//                log("Server stopped.");
-//            }
-//        }).start();
-//    }
-
-//    private void stopServer() {
-//        isRunning = false;
-//        connectionStatusLabel.setText("Connection Status: Stopped");
-//        connectionStatusLabel.setForeground(Color.RED);
-//        stopServerButton.setEnabled(false);
-//
-//        try {
-//            if (serverSocket != null && !serverSocket.isClosed()) {
-//                serverSocket.close();
-//            }
-//        } catch (IOException e) {
-//            log("Error stopping server: " + e.getMessage());
-//        }
-//    }
-//
-//    private void log(String message) {
-//        logArea.append(message + "\n");
-//        logArea.setCaretPosition(logArea.getDocument().getLength());
-//    }
-
-//    private class ClientHandler extends Thread {
-//        private Socket socket;
-//
-//        public ClientHandler(Socket socket) {
-//            this.socket = socket;
-//        }
-//
-//        public void run() {
-//            try (
-//                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true)
-//            ) {
-//                String command;
-//                while ((command = in.readLine()) != null) {
-//                    String[] parts = command.split(":", 3); // Split command into parts
-//                    String action = parts[0];
-//
-//                    if ("REGISTER".equalsIgnoreCase(action)) {
-//                        String username = parts[1];
-//                        String password = parts[2];
-//                        handleRegistration(username, password, out);
-//                    } else if ("LOGIN".equalsIgnoreCase(action)) {
-//                        String username = parts[1];
-//                        String password = parts[2];
-//                        handleLogin(username, password, out);
-//                    } else if ("LOGOUT".equalsIgnoreCase(action)) {
-//                        String username = parts[1];
-//                        handleLogout(username);
-//                    }
-//                }
-//            } catch (IOException e) {
-//                log("Connection error: " + e.getMessage());
-//            } finally {
-//                try {
-//                    socket.close();
-//                } catch (IOException e) {
-//                    log("Error closing client socket: " + e.getMessage());
-//                }
-//            }
-//        }
-//
-//        private void handleRegistration(String username, String password, PrintWriter out) {
-//            if (accounts.containsKey(username)) {
-//                out.println("FAIL: Username already exists.");
-//                log("Registration failed for username: " + username);
-//            } else {
-//                accounts.put(username, password);
-//                updateAccountCount();
-//                out.println("SUCCESS: Registered successfully.");
-//                log("User registered: " + username);
-//            }
-//        }
-//
-//        private void handleLogin(String username, String password, PrintWriter out) {
-//            if (!accounts.containsKey(username) || !accounts.get(username).equals(password)) {
-//                out.println("FAIL: Invalid username or password.");
-//                log("Failed login attempt: " + username);
-//            } else if (loggedInUsers.contains(username)) {
-//                out.println("FAIL: User already logged in.");
-//                log("Duplicate login attempt: " + username);
-//            } else {
-//                loggedInUsers.add(username);
-//                loggedInUsersModel.addElement(username);
-//                updateLoggedInCount();
-//                out.println("SUCCESS: Login successful.");
-//                log("User logged in: " + username);
-//            }
-//        }
-//
-//        private void handleLogout(String username) {
-//            if (loggedInUsers.remove(username)) {
-//                loggedInUsersModel.removeElement(username);
-//                updateLoggedInCount();
-//                log("User logged out: " + username);
-//            }
-//        }
-//    }
 }

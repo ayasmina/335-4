@@ -144,7 +144,7 @@ public class ClientGUI {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
 
-                client.connect(); // Attempt to connect first
+                //client.connect(); // Attempt to connect first
                 client.login(username, password);
                 JOptionPane.showMessageDialog(loginFrame, "Logged in as " + username);
             }
@@ -156,6 +156,13 @@ public class ClientGUI {
                 openRegisterWindow();
             }
 
+        });
+
+        ConectButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String serverIP = IPField.getText();
+                client.connect(serverIP);
+            }
         });
 
 
@@ -252,7 +259,7 @@ public class ClientGUI {
                 String password = new String(passwordField.getPassword());
                 String email = emailField.getText();
 
-                client.connect(); // Attempt to connect first if not connected
+                //client.connect(); // Attempt to connect first if not connected
                 client.register(username, password, email);
                 JOptionPane.showMessageDialog(registerFrame, "Registered successfully as " + username);
 

@@ -1,25 +1,30 @@
 import java.io.IOException;
-import java.net.Socket;
 
 public class Client {
     private static String HOST;
     private boolean isConnected = false;
     private boolean isLoggedIn = false;
-    private String username;
-    private String password;
-    private String email;
-    private String serverIP;
     private boolean passValid = false;
     private boolean emailValid = false;
+    public Network clientConnection;
+    private String response = "";
+
+    public static void main(String[] args){
+        Client client = new Client("127.0.0.1");
+        client.connect("127.0.0.1");
+        client.login("lynnir","blahblah");
+    }
 
     // Connect Client to Client Network Object
     public Client(String host) {
        Client.HOST = host;
-       Network clientConnection = new Network(HOST);
+       clientConnection = new Network(HOST);
     }
 
-    public void connect() {
-        if (!isConnected) {
+    public void connect(String host) {
+        Client.HOST = host;
+        Client client = new Client(HOST);
+        if (!isConnected) { // replace this statement with something that checks the response
             isConnected = true;
             System.out.println("Connected to " + HOST);
         } else {
@@ -38,33 +43,37 @@ public class Client {
         }
     }
 
-//    public void login(String username, String password) {
-//        if (isConnected && !isLoggedIn) {
-//            isLoggedIn = true;
-//            System.out.println("User " + username + " logged in.");
-//        } else if (!isConnected) {
-//            System.out.println("Please connect to the server first.");
-//        } else {
-//            System.out.println("Already logged in.");
-//        }
-//    }
+    public void login(String username, String password) {
+        String data = "1" + username + ":" + password;
+        String res = "";
+        if (isConnected && !isLoggedIn) {
+            isLoggedIn = true;
+            res = clientConnection.send(data);
+            System.out.println("CLIENT receive: " + res);
+            System.out.println("User " + username + " logged in.");
+        } else if (!isConnected) {
+            System.out.println("Please connect to the server first.");
+        } else {
+            System.out.println("Already logged in.");
+        }
+    }
 
-//    public void logout() {
-//        if (isLoggedIn) {
-//            isLoggedIn = false;
-//            System.out.println("Logged out.");
-//        } else {
-//            System.out.println("Not logged in.");
-//        }
-//    }
-// Needs pass and email validation
-//    public void register(String username, String password, String email) {
-//        if (isConnected) {
-//            System.out.println("User " + username + " registered with email " + email);
-//        } else {
-//            System.out.println("Please connect to the server first.");
-//        }
-//    }
+    public void logout() {
+        if (isLoggedIn) {
+            isLoggedIn = false;
+            System.out.println("Logged out.");
+        } else {
+            System.out.println("Not logged in.");
+        }
+    }
+ //Needs pass and email validation
+    public void register(String username, String password, String email) {
+        if (isConnected) {
+            System.out.println("User " + username + " registered with email " + email);
+        } else {
+            System.out.println("Please connect to the server first.");
+        }
+    }
 }
 //add forgot password ??????!!!!!!!
 //once u log in
