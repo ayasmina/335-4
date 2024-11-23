@@ -84,15 +84,17 @@ public class Server {
 
     // Testing Variables - using to ensure connection is working
     private String username = "lynnir";
-    private String password;
+    private String password = "blahblah123";
 
     // test login function
     public String login(String user, String pass){
         String res = "";
-        if (user.equals(this.username)){ // if the input equals the hard-coded username
-            res = user + " Logged In Successfully.";
+        if (!user.equals(this.username)){ // if the input equals the hard-coded username
+            res = "1";
+        } else if (!pass.equals(this.password)) {
+            res = "2";
         } else {
-            res = "Error Logging In.";
+            res = "0";
         }
         return res;
     }
@@ -114,11 +116,11 @@ public class Server {
 
                 switch (operation) {
                     case '0':
-                        System.out.println("entering connect case.");
+                        //System.out.println("entering connect case.");
                         System.out.println("Connect");
                         break;
                     case '1':
-                        System.out.println("Entering login case.");
+                        //System.out.println("Entering login case.");
                         // gathering user information from the substring
                         String user = info[0];
                         String pass = info[1];

@@ -71,11 +71,11 @@ public class ClientGUI {
         JTextField usernameField = new JTextField(20);
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setForeground(Color.LIGHT_GRAY);
-        ;
+
         JPasswordField passwordField = new JPasswordField(20);
         JButton loginButton = new JButton("Login");
         JLabel registerLabel = new JLabel("<html><a href='#'>Not registered? Register</a></html>");
-        JButton ConectButton = new JButton("Connect");
+        JButton connectButton = new JButton("Connect");
 
         // GridBagLayout constraints
         GridBagConstraints gbc = new GridBagConstraints();
@@ -101,7 +101,7 @@ public class ClientGUI {
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        loginFrame.add(ConectButton, gbc);
+        loginFrame.add(connectButton, gbc);
 
 
         gbc.gridx = 0;
@@ -138,15 +138,29 @@ public class ClientGUI {
         gbc.gridy = 10;
         loginFrame.add(registerLabel, gbc);
 
+        // -- ACTION LISTENERS --
+
+        connectButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String serverIP = IPField.getText();
+                client.connect(serverIP);
+            }
+        });
+
         // Action listener for login button
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Grabbing Info
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
+                // Attempting Login Thru Client
+                String result = client.login(username, password);
 
-                //client.connect(); // Attempt to connect first
-                client.login(username, password);
-                JOptionPane.showMessageDialog(loginFrame, "Logged in as " + username);
+                // -- Debugging Test
+                //System.out.println("CLIENT GUI received: " + result);
+
+                //Displaying Response From Client
+                JOptionPane.showMessageDialog(loginFrame, result);
             }
         });
 
@@ -156,13 +170,6 @@ public class ClientGUI {
                 openRegisterWindow();
             }
 
-        });
-
-        ConectButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String serverIP = IPField.getText();
-                client.connect(serverIP);
-            }
         });
 
 

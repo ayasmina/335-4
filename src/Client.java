@@ -14,11 +14,11 @@ public class Client {
     private String response = "";
 
     // Tester main so we don't have to launch the GUI every single time
-    public static void main(String[] args){
-        Client client = new Client("127.0.0.1");
-        client.connect("127.0.0.1");
-        client.login("lynnir","blahblah");
-    }
+//    public static void main(String[] args){
+//        Client client = new Client("127.0.0.1");
+//        client.connect("127.0.0.1");
+//        client.login("lynnir","blahblah");
+//    }
 
     // Connect Client to Client Network Object
     public Client(String host) {
@@ -37,15 +37,6 @@ public class Client {
         }
     }
 
-    public void connect() {
-        if (!isConnected) {
-            isConnected = true;
-            System.out.println("Connected to " + HOST);
-        } else {
-            System.out.println("Already connected.");
-        }
-    }
-
     public void disconnect() {
         if (isConnected) {
             isConnected = false;
@@ -57,19 +48,35 @@ public class Client {
         }
     }
 
-    public void login(String username, String password) {
+    public String login(String username, String password) {
         String data = "1" + username + ":" + password;
         String res = "";
+        String guiOut = "";
         if (isConnected && !isLoggedIn) {
-            isLoggedIn = true;
             res = clientConnection.send(data);
             System.out.println("CLIENT receive: " + res);
-            System.out.println("User " + username + " logged in.");
+            switch (res){
+                case "0":
+                    guiOut = "User successfully signed in.";
+                    System.out.println(guiOut);
+                    isLoggedIn = true;
+                    break;
+                case "1":
+                    guiOut = "No username matching our records.";
+                    System.out.println(guiOut);
+                    break;
+                case "2":
+                    guiOut = "Password is incorrect.";
+                    System.out.println(guiOut);
+            }
         } else if (!isConnected) {
-            System.out.println("Please connect to the server first.");
+            guiOut = "Please connect to the server first.";
+            System.out.println(guiOut);
         } else {
-            System.out.println("Already logged in.");
+            guiOut = "Already logged in.";
+            System.out.println(guiOut);
         }
+        return guiOut;
     }
 
     public void logout() {
