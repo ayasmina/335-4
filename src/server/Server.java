@@ -6,13 +6,14 @@ import java.util.Vector;
 
 public class Server {
     //  Instantiate list for active client threads
-    public static Vector<Networking> clientConnections;
+    public static Vector<MultiThread> clientConnections;
     //  Assign each client connection an ID
     private static int nextId = 0;
     //  Socket waits for client connections
     public static ServerSocket serversocket;
     //  Port number used for client communication
     private static final int PORT = 8000;
+    private Server server;
 
     public Server() {
         //  Construct the list of active client threads
@@ -21,8 +22,9 @@ public class Server {
         listen();
     }
     private void peerConnection(Socket socket) {
+        Networking networkConnection = new Networking(nextId, socket, this);
         //  Create a thread communication when client arrives
-        Networking connection = new Networking(nextId, socket, this);
+        MultiThread connection = new MultiThread(networkConnection, socket, this);
         //  Add the new thread to the active client threads list
         clientConnections.add(connection);
         //  Start the thread
@@ -52,7 +54,7 @@ public class Server {
     public static void removeID(int id) {
         //  Find the object belonging to the client thread being terminated
         for (int i = 0; i < clientConnections.size(); ++i) {
-            Networking cc = clientConnections.get(i);
+            MultiThread cc = clientConnections.get(i);
             long x = cc.getId();
             if (x == id) {
                 // Remove ID from the clientConnections list and the connection thread will terminate itself
@@ -82,35 +84,68 @@ public class Server {
             throw new RuntimeException(e);
         }
     }
-    public static String parseInput(String data){
+
+    // Testing Variables - using to ensure connection is working
+    private String username = "lynnir";
+    private String password;
+    // test login function
+    public String login(String user, String pass){
+        String res = "";
+        if (user.equals(this.username)){ // if the input equals the hard-coded username
+            res = user + " Logged In Successfully.";
+        } else {
+            res = "Error Logging In.";
+        }
+        return res;
+    }
+    public String parseInput(String data){
+        System.out.println("Received data: " + data);
         char operation;
         String result = "";
+        String response = "";
         if(data != null) {
-            operation = data.charAt(0);
+            operation = data.charAt(0); // grabbing operation from string
+            //System.out.println("1. Operation sent: " + operation);
             if(data.length() > 1) {
+                //System.out.println("2. Entering if loop.");
                 result = data.substring(1);
+                String[] info = result.split(":");
+                //System.out.println(info.length);
+                //System.out.println("3. Remaining info: " + result);
+
                 switch (operation) {
-                    case 0:
+                    case '0':
+                        System.out.println("entering connect case.");
                         System.out.println("Connect");
                         break;
-                    case 1:
-                        System.out.println("Login");
+                    case '1':
+                        System.out.println("Entering login case.");
+                        // gathering user information from the substring
+                        String user = info[0];
+                        String pass = info[1];
+                        System.out.println("User Info: username - " + user + " password - " + pass);
+                        // calling login function here so the response can go back to Network
+                        response = login(user, pass);
+                        //System.out.println(response);
                         break;
-                    case 2:
+                    case '2':
                         System.out.println("Register User");
                         break;
-                    case 3:
+                    case '3':
                         System.out.println("Password Recovery");
                         break;
-                    case 4:
+                    case '4':
                         System.out.println("Logout");
                         break;
-                    case 5:
+                    case '5':
                         System.out.println("Disconnect");
                         break;
+                    default : // in case it's not entering a case for some reason so we know
+                        response = ("Error with switch loop.");
                 }   //  End Switch (operation)
             }   //  End If (data length > 1)
         }   //  End If (Data is not null)
-        return result;
+        //System.out.println("SERVER sending: " + response);
+        return response;
     }
 }

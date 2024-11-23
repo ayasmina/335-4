@@ -29,7 +29,6 @@ public class ServerGUI {
         loadAccounts();
         startServer();
     }
-
     private void setupGUI() {
         // Main server frame
         serverFrame = new JFrame("Server Dashboard");
