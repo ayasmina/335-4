@@ -128,7 +128,15 @@ public class Server {
                         //System.out.println(response);
                         break;
                     case '2':
-                        System.out.println("Register User");
+                        System.out.println("Entering register user case.");
+                        // Gathering registration information from the substring
+                        String newUser = info[0]; // Assume info[0] contains the username
+                        String newPass = info[1]; // Assume info[1] contains the password
+                        System.out.println("Registering user: username - " + newUser + ", password - " + newPass);
+                        // Calling register function and storing the response
+                        response = register(newUser, newPass);
+                        // Optionally print or log the response for debugging purposes
+                        System.out.println("Register response: " + response);
                         break;
                     case '3':
                         System.out.println("Password Recovery");
