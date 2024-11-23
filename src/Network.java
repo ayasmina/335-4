@@ -81,8 +81,7 @@ public class Network extends Thread {
 //            // receive response from the Server - automated - rn Server doesnt actually get the message
             rtnmsg = ""; // empty string for response
             do { // read for input while the response string is empty
-                socket.setSoTimeout(5000); // Timeout of 5 seconds - makes it so the client wont wait forever
-                // and ever if something is wrong
+                //socket.setSoTimeout(5000); // Timeout of 5 seconds - makes it so the client wont wait forever and ever if something is wrong
                 rtnmsg = datain.readLine();
             } while (rtnmsg.equals(""));
 
@@ -109,27 +108,35 @@ public class Network extends Thread {
         // Server thread runs until the client terminates the connection
         while (go) {
             try {
+                String txtOut = "";
                 /*  always receives a String object with a newline (\n)
                     on the end due to how BufferedReader readLine() works.
                     The client adds it to the user's string but the BufferedReader
                     readLine() call strips it off   */
 
-                // Using receive() instead of datain.readLine() cause...idk
-                String txtIn = receive();
-                System.out.println("SERVER receive: " + txtIn);
+                    // Using receive() instead of datain.readLine() cause...idk
+                    String txtIn = receive();
+                if(txtIn != null) {
+                    System.out.println("SERVER receive: " + txtIn);
 
-                // Sending txtIn to server instance of Server to parse the input and go through the operations
-                // txtOut is the response that parseInput returns after Server completes a process
-                String txtOut = server.parseInput(txtIn);
-                if (txtOut == null || txtOut.trim().isEmpty()) {
-                    System.out.println("Server response is empty!");
+                    // Sending txtIn to server instance of Server to parse the input and go through the operations
+                    // txtOut is the response that parseInput returns after Server completes a process
+                    txtOut = server.parseInput(txtIn);
+                    if (txtOut == null || txtOut.trim().isEmpty()) {
+                        System.out.println("Server response is empty!");
+                    } else {
+                        System.out.println("SERVER responding: " + txtOut);
+                    }
+                    dataout.writeBytes(txtOut + "\n");
+                    dataout.flush();
                 } else {
-                    System.out.println("SERVER responding: " + txtOut);
+                    txtOut = "No input";
+                    go = false;
                 }
 
                 // Sending response to client???
-               dataout.writeBytes(txtOut + "\n");
-               dataout.flush();
+//               dataout.writeBytes(txtOut + "\n");
+//               dataout.flush();
             }   //  End Try
             catch(IOException e) {
                 e.printStackTrace();
