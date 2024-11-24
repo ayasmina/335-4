@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 // Client: Send, then Receive/listen
 // Server: Receive/Listen then Send
@@ -9,7 +8,6 @@ import java.util.*;
 public class Network extends Thread {
     private static final int PORT = 8000;
 
-    private boolean go;
     private String name;
     private int id;
 
@@ -45,7 +43,6 @@ public class Network extends Thread {
         this.server = server;
         this.id = id;
         this.name = Integer.toString(id);
-        go = true;
 
         try {
             datain = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -55,15 +52,6 @@ public class Network extends Thread {
             System.exit(1);
         }
     }
-
-//    public String toString() {
-//        return name;
-//    }
-
-//    public String getname() {
-//        return name;
-//    }
-
 
     // ClientGUI -> Client -> Network -> Server -> Network -> Client -> ClientGUI
     // Client -> Network - clientConnection.send(String)
@@ -101,47 +89,6 @@ public class Network extends Thread {
           System.exit(1);
       }
       return res;
-    }
-
-    public void run () {
-        // Server thread runs until the client terminates the connection
-        while (go) {
-            try {
-                String txtOut = "";
-                /*  always receives a String object with a newline (\n)
-                    on the end due to how BufferedReader readLine() works.
-                    The client adds it to the user's string but the BufferedReader
-                    readLine() call strips it off   */
-
-                // Using receive() instead of datain.readLine() cause...idk
-                String txtIn = receive();
-                if(txtIn != null) {
-                    System.out.println("SERVER receive: " + txtIn);
-
-                    // Sending txtIn to server instance of Server to parse the input and go through the operations
-                    // txtOut is the response that parseInput returns after Server completes a process
-                    txtOut = server.parseInput(txtIn);
-                    if (txtOut == null || txtOut.trim().isEmpty()) {
-                        System.out.println("Server response is empty!");
-                    } else {
-                        System.out.println("SERVER responding: " + txtOut);
-                    }
-                    dataout.writeBytes(txtOut + "\n");
-                    dataout.flush();
-                } else {
-                    txtOut = "No input";
-                    go = false;
-                }
-
-                // Sending response to client???
-//               dataout.writeBytes(txtOut + "\n");
-//               dataout.flush();
-            }   //  End Try
-            catch(IOException e) {
-                e.printStackTrace();
-                go = false;
-            }
-        }
     }
 }
 

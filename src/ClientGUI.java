@@ -1,11 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.IOException;
+import java.awt.event.*;
 
 public class ClientGUI {
     private Client client;
@@ -39,10 +34,9 @@ public class ClientGUI {
 
     public ClientGUI() {
         // Initialize the client
-        client = new Client("localhost");
-
+        client = new Client();
         // Setup the login frame with background image
-        String loginBackgroundPath = "/Users/yasmine/Downloads/Background.jpg"; // Update the path as needed
+        String loginBackgroundPath = "/Users/yasmine/Downloads/Background.jpg"; // Update this so it pulls from within the project, not computer
         loginFrame = new JFrame("Login") {
             {
                 setContentPane(new BackgroundPanel(loginBackgroundPath));
@@ -143,7 +137,8 @@ public class ClientGUI {
         connectButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String serverIP = IPField.getText();
-                client.connect(serverIP);
+                String result = client.connect(serverIP);
+                JOptionPane.showMessageDialog(loginFrame, result);
             }
         });
 
