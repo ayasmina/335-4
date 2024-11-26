@@ -5,7 +5,6 @@ public class Client {
     private boolean passValid = false;
     private boolean emailValid = false;
     public Network clientConnection;
-    String guiOut = "";
 
 //    // Tester main so we don't have to launch the GUI every single time
 //    public static void main(String[] args){
@@ -22,6 +21,7 @@ public class Client {
 
     // Connects Client to Client Network Object -- working
     public String connect(String host) {
+        String guiOut = "";
         this.HOST = host;
         String data = "0" + HOST;
         String res = "";
@@ -46,6 +46,7 @@ public class Client {
 
     // Works with main tester
     public String disconnect() {
+        String guiOut = "";
         String data = "5disconnect";
         String res = "";
         if (isConnected) {
@@ -69,28 +70,36 @@ public class Client {
 
     // Working with hard coded info
     public String login(String username, String password) {
+        String guiOut = "";
         String data = "1" + username + ":" + password;
         String res = "";
         if (isConnected && !isLoggedIn) {
             res = clientConnection.send(data);
-            System.out.println("CLIENT receive: " + res);
-            switch (res){
-                case "0":
+            //System.out.println("CLIENT receive: " + res);
+            char operation = res.charAt(0);
+            switch (operation){
+                case '0':
                     guiOut = "User successfully signed in.";
-                    System.out.println(guiOut);
+                    //System.out.println(guiOut);
                     isLoggedIn = true;
                     break;
-                case "1":
+                case '1':
                     guiOut = "No username matching our records.";
-                    System.out.println(guiOut);
+                    //System.out.println(guiOut);
                     break;
-                case "2":
-                    guiOut = "Password is incorrect.";
-                    System.out.println(guiOut);
+                case '2':
+                    guiOut = "Account is locked. Please go through password recovery.";
+                    //System.out.println(guiOut);
                     break;
-                case "3":
-                    guiOut = "This account is already logged in.";
-                    System.out.println(guiOut);
+                case '3':
+                    guiOut = "Account is already logged in.";
+                    //System.out.println(guiOut);
+                    break;
+                case '4':
+                    String info = res.substring(1);
+                    String[] strikes = info.split(":");
+                    guiOut = "Password is incorrect. You now have " + strikes[0] + " strike(s).\nYour account will lock at 3 strikes.\nYou have " + strikes[1] +  " attempts remaining." ;
+                    //System.out.println(guiOut);
                     break;
             }
         } else if (!isConnected) {
@@ -104,6 +113,7 @@ public class Client {
     }
 
     public void logout() {
+        String guiOut = "";
         if (isLoggedIn) {
             isLoggedIn = false;
             System.out.println("Logged out.");
@@ -113,44 +123,68 @@ public class Client {
     }
 
     //Needs pass and email validation
-    public void register(String username, String password, String email) {
+    public String register(String username, String password, String email) {
+        String guiOut = ""; // string that sends response to clientGUI
         // Prepare data for registration request
         String data = "2" + username + ":" + password + ":" + email;
-        passValid = RegexEmail.validPassword(password);
-        emailValid = RegexEmail.validEmailAddress((email));
-        if (isConnected) {
-            // Send the registration data to the server
-            String res = clientConnection.send(data);
-            System.out.println("CLIENT receive: " + res);
-            // Handle server response
-            switch (res) {
-                case "0":
-                    System.out.println("User successfully registered.");
-                    break;
-                case "1":
-                    System.out.println("Username already exists.");
-                    break;
-                default:
-                    System.out.println("Registration failed. Please try again.");
-                    break;
+        if (isConnected){
+            passValid = RegexEmail.validPassword(password);
+            emailValid = RegexEmail.validEmailAddress((email));
+            if (passValid && emailValid) {
+                // Send the registration data to the server
+                String res = clientConnection.send(data);
+                System.out.println("CLIENT receive: " + res);
+                // Handle server response
+                switch (res) {
+                    case "0":
+                        guiOut = "User successfully registered.";
+                        System.out.println("User successfully registered.");
+                        break;
+                    case "1":
+                        guiOut = "Username already exists.";
+                        System.out.println("Username already exists.");
+                        break;
+                    default:
+                        guiOut = "Registration failed. Please try again.";
+                        System.out.println("Registration failed. Please try again.");
+                        break;
+                }
+            } else {
+                System.out.println("Please connect to the server first.");
             }
-        } else {
-            System.out.println("Please connect to the server first.");
+        } else if (!passValid){
+            guiOut = "Please enter a valid password.";
+        } else if (!emailValid){
+            guiOut = "Please enter a valid email.";
         }
+        return guiOut;
     }
 
     // New recoverPassword method
-    public void recoverPassword(String username) {
+    public String recoverPassword(String username) {
+        String guiOut = "";
         String data = "3" + username;
         if (isConnected) {
             String res = clientConnection.send(data);
             // Simulate sending a temporary password to the user's registered email
-            String tempPassword = "Temp1234"; // Temporary password for demonstration purposes
-            System.out.println("Temporary password sent to the email associated with username: " + username);
-            System.out.println("Temporary password: " + tempPassword); // In real applications, do not log sensitive data
+            System.out.println("CLIENT receive: " + res);
+            switch (res){
+                case "0":
+                    guiOut = "Temporary password sent to the email associated with username:\n" + username;
+                    System.out.println(guiOut);
+                    break;
+                case "1":
+                    guiOut = "No account with that user exists.";
+                    System.out.println(guiOut);
+                    break;
+                default:
+                    guiOut = "An error occurred.";
+                    System.out.println(guiOut);
+            }
         } else {
             System.out.println("Please connect to the server first.");
         }
+        return guiOut;
     }
 
     // Connection status method

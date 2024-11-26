@@ -12,8 +12,15 @@ public class Server {
     public int nextId = 0;
     // Port Server Will Be Listening To
     public static final int PORT = 8000;
+    //public SendEmail email = new SendEmail();
+    // mock accounts
+    private ArrayList<User> accounts = new ArrayList<>();
+    // Testing Variables - using to ensure connection is working
+    User lynn = new User("lynnir", "blahblah123", "elliecavanagh002@gmail.com");
+    User yasmine = new User ("yafkir", "12345678", "yafkir@gmail.com");
 
 
+    // -- SERVER BUILD --
     public static void main (String args[]) {
         new Server();
     }
@@ -21,6 +28,8 @@ public class Server {
     public Server() {
         //  Construct the list of active client threads
         clientConnections = new Vector<>();
+        accounts.add(lynn);
+        accounts.add(yasmine);
         //  Listen for incoming connection requests
         listen();
     }
@@ -45,7 +54,6 @@ public class Server {
             }   //  End if(x == id)
         }   //  End removeID(int id)
     }
-
 
     // adjust this so something gets sent back to the client so they know they connected
     private void peerConnection(Socket socket) {
@@ -80,35 +88,82 @@ public class Server {
         }
     }
 
-    // Testing Variables - using to ensure connection is working
-    private String username = "lynnir";
-    private String password = "blahblah123";
-    private boolean logged = false;
+
+    // -- SERVER OPERATIONS --
 
     // test login function
-    public String login(String user, String pass){
+    public String login(String user, String pass){ // not grabbing user properly
         String res = "";
-        if (!user.equals(this.username)){ // if the input equals the hard-coded username
-            res = "1";
-        } else if (!pass.equals(this.password)) {
-            res = "2";
-        } else if (logged == true) {
-            res = "3";
-        } else {
-            logged = true;
-            res = "0";
+        // if user exists
+        for(int i = 0; i < accounts.size(); i++){
+            User account = accounts.get(i);
+            if(!user.equals(account.getUser())){ // if user doesn't exist / match
+                res = "1"; // no user exists
+            } else if (account.getLocked()){ // checks if acc is locked out
+                res = "2"; // account is locked
+                break;
+            } else if (account.getLogged()){ // checks if account is already signed in
+                res = "3"; // account is already signed in
+                break;
+            } else if (!pass.equals(account.getPass())){ // checks if pass matches
+                int strikes = account.getStrikes();
+                if(strikes == 3){
+                    account.setLocked(true);
+                    res = "2";
+                } else {
+                    int attempts = 3 - strikes;
+                    res = "4" + strikes + ":" + attempts;
+                    account.setStrikes(0);
+                }
+            } else { // successful login
+                account.setLog(true);
+                res = "0";
+                break;
+            }
         }
         return res;
     }
 
-//    public String passRecover(String user){
-//        String res = "";
-//        if(!user.equals(this.username)){
-//            res = "0";
-//        } else if (){
-//
-//        }
-//    }
+    // tester password recovery function -- working with mock accounts
+    public String passRecover(String user) {
+        SendEmail email = new SendEmail();
+        String res = "";
+        for (int i = 0; i < accounts.size(); i++) {
+            User account = accounts.get(i);
+            if (!user.equals(account.getUser())) {
+                res = "1"; // user does not exist
+            } else {
+                String address = account.getEmail(); // getting user email
+                String newPass = email.generateEmail(address); // sending email
+                account.setPass(newPass); // setting accounts password to temp password
+                res = "0"; // sending back to parseInput
+                break;
+            }
+        }
+        return res;
+    }
+
+    // tester register function
+    public String register(String user, String pass, String add){
+        String res = "";
+        boolean userExists = false;
+        for (int i = 0; i < accounts.size(); i++){
+            User account = accounts.get(i);
+            System.out.println(account.getUser());
+            if (user.equals(account.getUser())){ // if account with user already exists
+                userExists = true;
+                res = "1";
+                break;
+            }
+        }
+        if (!userExists){
+            User account = new User(user, pass, add); // create new user
+            accounts.add(account); // add new user to arraylist
+            System.out.println(accounts.size());
+            res = "0"; // successful registration
+        }
+        return res;
+    }
 
     // Using 0 and 1 for True and False responses in places applicable, extending beyond 0 and 1 when needed
     public String parseInput(String data){
@@ -135,25 +190,27 @@ public class Server {
                         // gathering user information from the substring
                         String user = info[0];
                         String pass = info[1];
-                        System.out.println("User Info: username - " + user + " password - " + pass);
+                        //System.out.println("User Info: username - " + user + " password - " + pass);
                         // calling login function here so the response can go back to Network
                         response = login(user, pass);
                         //System.out.println(response);
                         break;
-                    case '2':
+                    case '2': // needs register function in Server
                         System.out.println("Entering register user case.");
                         // Gathering registration information from the substring
                         String newUser = info[0]; // Assume info[0] contains the username
                         String newPass = info[1]; // Assume info[1] contains the password
-                        System.out.println("Registering user: username - " + newUser + ", password - " + newPass);
+                        String newEmail = info[2];
+                        System.out.println("Registering user: username - " + newUser + ", password - " + newPass + ", email - " + newEmail);
                         // Calling register function and storing the response
-                        //response = register(newUser, newPass);
+                        response = register(newUser, newPass, newEmail);
                         // Optionally print or log the response for debugging purposes
                         System.out.println("Register response: " + response);
                         break;
                     case '3':
                         System.out.println("Entering passRec.");
-
+                        String username = info[0];
+                        response = passRecover(username);
                         break;
                     case '4':
                         System.out.println("Logout");
