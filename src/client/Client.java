@@ -1,3 +1,5 @@
+package client;
+
 public class Client {
     private static String HOST;
     private boolean isConnected = false;
@@ -187,7 +189,7 @@ public class Client {
         return guiOut;
     }
 
-    // Connection status method
+    // Connection status method -- what is this for??
     public void printConnectionStatus() {
         System.out.println("Server: " + HOST);
         System.out.println("Connected: " + isConnected);

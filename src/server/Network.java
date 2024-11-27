@@ -1,11 +1,17 @@
-import java.io.*;
-import java.net.*;
+package server;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 // Client: Send, then Receive/listen
 // Server: Receive/Listen then Send
 // Alternating modes
 
-public class Network extends Thread {
+public class Network {
     private static final int PORT = 8000;
 
     private String name;
@@ -15,7 +21,6 @@ public class Network extends Thread {
     private BufferedReader datain;
     private DataOutputStream dataout;
 
-    private Server server;
     private Socket socket;
 
     // In given code: this was the public Client() method in Client.java
@@ -39,8 +44,7 @@ public class Network extends Thread {
     //In given code: this was the ConnectionThread Constructor
     // -- creates I/O objects on top of the socket
     // Server Network Object
-    public Network(int id, Socket socket, Server server) {
-        this.server = server;
+    public Network(int id, Socket socket) {
         this.id = id;
         this.name = Integer.toString(id);
 

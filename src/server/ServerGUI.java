@@ -1,8 +1,7 @@
+package server;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.Socket;
 import java.util.Vector;
 
 public class ServerGUI {
@@ -109,9 +108,9 @@ public class ServerGUI {
         logArea.setCaretPosition(logArea.getDocument().getLength());
     }
 
-    public void updateConnectionList(Vector<Network> connections) {
+    public void updateConnectionList(Vector<MultiThread> connections) {
         connectionsModel.clear();
-        for (Network connection : connections) {
+        for (MultiThread connection : connections) {
             connectionsModel.addElement("Client ID: " + connection.getId());
         }
         activeConnectionsLabel.setText("Active Connections: " + connections.size());
@@ -134,9 +133,6 @@ public class ServerGUI {
 //    private DefaultListModel<String> loggedInUsersModel;
 //    private JButton stopServerButton;
 //
-//    private static final int PORT = 12345;
-//    private Map<String, String> accounts = new HashMap<>(); // Mock accounts storage (username -> password)
-//    private Set<String> loggedInUsers = new HashSet<>(); // Set of logged-in usernames
 //    private ServerSocket serverSocket;
 //    private boolean isRunning = true;
 //

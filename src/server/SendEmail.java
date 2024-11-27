@@ -1,3 +1,5 @@
+package server;
+
 // -- To prepare your gmail smtp account follow the steps described here
 //    https://support.google.com/accounts/answer/185833
 //
@@ -67,10 +69,10 @@ public class SendEmail {
     // -- You must have a valid gmail username/password pair to use gmail as a SMTP service
     static private String username = "csc335pablo";
     static private String password = "bobp qxbv djxm tqvk\n";
-    String tempPass = "abcd$1234";
-    String messagetext = "Here is your password : " + tempPass;
-    String from = "";
-    Session session;
+    private String tempPass = "abcd$1234";
+    private String messagetext = "Here is your password : " + tempPass;
+    private String from = "";
+    private Session session;
 
     // building email stuff
     public SendEmail(){
