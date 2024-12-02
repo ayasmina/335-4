@@ -76,9 +76,9 @@ public class ServerGUI extends JFrame {
 
     private void startServer() {
         if (!isServerRunning) {
-            // Initialize database connection
+            // Initialize database connection using getter methods for credentials
             try {
-                databaseManager = new DBMS(DBMS.usernameSQL, DBMS.passwordSQL);
+                databaseManager = new DBMS(DBMS.getUsernameSQL(), DBMS.getPasswordSQL());
                 updateRegisteredAccountsCount();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
@@ -179,8 +179,8 @@ public class ServerGUI extends JFrame {
             String countQuery = "SELECT COUNT(*) FROM users";
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://127.0.0.1:3306/sys",
-                    DBMS.usernameSQL,
-                    DBMS.passwordSQL
+                    DBMS.getUsernameSQL(), // Use the getter method
+                    DBMS.getPasswordSQL()  // Use the getter method
             );
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(countQuery);
@@ -203,3 +203,4 @@ public class ServerGUI extends JFrame {
         });
     }
 }
+//updated verrr
