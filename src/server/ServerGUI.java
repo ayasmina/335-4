@@ -1,7 +1,5 @@
 package client;
 
-import server.Server;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -35,17 +33,28 @@ public class ClientGUI {
 
     public ClientGUI() {
         client = new Client();
+
         showConnectWindow();
     }
-
     private void showConnectWindow() {
-        connectFrame = new JFrame("Connect");
+        String connectBackgroundPath = "/Users/yasmine/Downloads/Background.jpg";
+        connectFrame = new JFrame("Connect") {
+            {
+                connectFrame = new JFrame("Connect");
+
+                setContentPane(new BackgroundPanel(connectBackgroundPath));
+            }
+        };
+
         connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        connectFrame.setSize(400, 200);
+        connectFrame.setSize(500, 500);
         connectFrame.setLayout(new GridBagLayout());
+        JLabel headingLabel = new JLabel("Connect");
+        headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+        headingLabel.setForeground(Color.BLUE);
 
         JLabel IPLabel = new JLabel("Server IP:");
-        JTextField IPField = new JTextField(20);
+        JTextField IPField = new JTextField(30);
         JButton connectButton = new JButton("Connect");
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -74,10 +83,12 @@ public class ClientGUI {
                 JOptionPane.showMessageDialog(connectFrame, result, "Connection Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+// as when its sending a connection confirmation it shows it as a connection error needs a fix
 
         connectFrame.setVisible(true);
     }
 
+    //needs to pop show login window after connection confirmed NEEDS FIX
     private void showLoginWindow() {
         loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,6 +100,7 @@ public class ClientGUI {
         JLabel passwordLabel = new JLabel("Password:");
         JPasswordField passwordField = new JPasswordField(20);
         JButton loginButton = new JButton("Login");
+        JButton disconnectButton = new JButton("Disconnect");
         JLabel registerLabel = new JLabel("<html><a href='#'>Not registered? Register</a></html>");
         JLabel forgottenPassLabel = new JLabel("<html><a href='#'>Forgot Password?</a></html>");
 
@@ -174,12 +186,13 @@ public class ClientGUI {
 
         gbc.gridy = 3;
         dashboardFrame.add(serverAppButton, gbc);
-
+//shut down doesnt shut down the client uit just takes u back to connect window
         shutdownButton.addActionListener(e -> {
             client.logout();
             client.disconnect();
             JOptionPane.showMessageDialog(dashboardFrame, "Shutdown complete.");
             dashboardFrame.dispose();
+            showConnectWindow();
         });
 
         updatePasswordButton.addActionListener(e -> showUpdatePasswordWindow());
@@ -201,7 +214,7 @@ public class ClientGUI {
 
     private void showUpdatePasswordWindow() {
         updatePasswordFrame = new JFrame("Update Password");
-        updatePasswordFrame.setSize(300, 200);
+        updatePasswordFrame.setSize(400, 200);
         updatePasswordFrame.setLayout(new GridBagLayout());
 
         JLabel newPasswordLabel = new JLabel("New Password:");
@@ -238,10 +251,10 @@ public class ClientGUI {
 
            // if (newPassword.equals(verifyPassword)) {
               //  String result = client.updatePassword(newPassword);
-              //  JOptionPane.showMessageDialog(updatePasswordFrame, result);
+               // JOptionPane.showMessageDialog(updatePasswordFrame, result);
               //  updatePasswordFrame.dispose();
-          //  } else {
-          //      JOptionPane.showMessageDialog(updatePasswordFrame, "Passwords do not match!", "Error", JOptionPane.ERROR_MESSAGE);
+           // } else {
+            //    JOptionPane.showMessageDialog(updatePasswordFrame, "Passwords do not match!", "Error", JOptionPane.ERROR_MESSAGE);
           //  }
         });
 
@@ -250,7 +263,7 @@ public class ClientGUI {
 
     private void openRegisterWindow() {
         // Set up the registration frame with background image
-        String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update the path as needed
+        String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg";
         registerFrame = new JFrame("Register") {
             {
                 setContentPane(new BackgroundPanel(registerBackgroundPath));
@@ -382,9 +395,9 @@ public class ClientGUI {
                 System.out.println(response);
                 JOptionPane.showMessageDialog(forgottenPassFrame, response);
             }
-//            else {
-//                JOptionPane.showMessageDialog(forgottenPassFrame, "Please enter a username!", "Error", JOptionPane.ERROR_MESSAGE);
-//            }
+            else {
+                JOptionPane.showMessageDialog(forgottenPassFrame, "Please enter a username!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
             forgottenPassFrame.dispose();
         });
 
@@ -394,6 +407,8 @@ public class ClientGUI {
 
 }
 
+
+//edit this code not changing only what needs to be changed keep the backgrounds in their place start by
 // first window that pops up should be "connect" i will ask for the IP and the connect button
 // once connected a window pops up that asks to log in keeping the register link (that opens the register window if clicked) and the forgotten password ( that if clicked the recovery window pops open)
 // if the user logs in then a window pops open called dashboard and it has a shutdown button that shuts down calls log out and disconnect and another button called update password that pops a window open asks to enter new password and another one to verify password entered  (compare the two fields) and a log out button
