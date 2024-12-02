@@ -33,7 +33,6 @@ public class ClientGUI {
 
     public ClientGUI() {
         client = new Client();
-
         showConnectWindow();
     }
     private void showConnectWindow() {
