@@ -332,14 +332,15 @@ public class Server {
         return LockedOutUsers;
     }
 
+     public int getNumberOfConnections(){
+        return clientConnections.size();
+    }
     public int getNumberOfLockedOutUsers(){
         return getLockedOutUsers().size();
     }
-
     public synchronized int getNumberOfRegisteredUsers() {
         return User.userList.size();
     }
-
     public String serverApplication(){
         String result = "Server Use!";
         return result;
