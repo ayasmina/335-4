@@ -5,9 +5,6 @@ import java.net.*;
 import java.util.*;
 
 public class Server {
-    public static void main(String[] args) {
-        startServer();
-    }
     // Flag to control server state
     private boolean isRunning = true;
     //  Instantiate list for active client threads
@@ -23,7 +20,7 @@ public class Server {
     // -- Server Constructor  --
     public Server() {
         //  Construct the list of active client threads
-        clientConnections = new Vector<>();
+        clientConnections = new Vector<MultiThread>();
         this.userDB = new DBMS();
         userDB.syncUserList();
         userDB.logoutAll(userDB);
@@ -59,6 +56,21 @@ public class Server {
     public static int getPort() {
         return PORT;
     }   //  --  End Get Port Method --
+    //  --  Peer Connection Creation Method --
+    private void peerConnection(Socket socket) {
+        //  Create a thread communication when client arrives
+        Network networkConnection = new Network(nextId, socket);
+        System.out.println(networkConnection.getId());
+        MultiThread connection = new MultiThread(networkConnection, socket, this);
+        System.out.println(connection.getId());
+        //  Add the new thread to the active client threads list
+        clientConnections.add(connection);
+        //  Start the thread
+        connection.start();
+        //  Place some text in the area to let the server operator know what is going on
+        System.out.println("SERVER: connection received for id " + nextId + "\n");
+        ++nextId;
+    }   //  --  End Peer Connection Method  --
     //  --  Remove ID of individual Client Object Method    --
     public void removeID(int ID) {  // Called by a ServerThread after a client is terminated
         //  Find the object belonging to the client thread being terminated
@@ -74,19 +86,7 @@ public class Server {
             }   //  End If
         }   //  End For
     }   //  --  End Remove ID Method    --
-    //  --  Peer Connection Creation Method --
-    private void peerConnection(Socket socket) {
-        //  Create a thread communication when client arrives
-        Network networkConnection = new Network(nextId, socket);
-        MultiThread connection = new MultiThread(networkConnection, socket, this);
-        //  Add the new thread to the active client threads list
-        clientConnections.add(connection);
-        //  Start the thread
-        connection.start();
-        //  Place some text in the area to let the server operator know what is going on
-        System.out.println("SERVER: connection received for id " + nextId + "\n");
-        ++nextId;
-    }   //  --  End Peer Connection Method  --
+
     //  --  Server Listens For New Connections Method  --
     public void listen() {
         try {

@@ -15,6 +15,7 @@ public class MultiThread extends Thread {
 
     public MultiThread(Network network, Socket socket, Server server) {
         this.network = network;
+        this.id = network.getId();
         this.socket = socket;
         this.server = server;
         clientIsConnected = true;
@@ -27,6 +28,11 @@ public class MultiThread extends Thread {
             System.exit(1);
         }
     }
+
+    public long getId(){
+        return this.id;
+    }
+
     public void run () {
         // Server thread runs until the client terminates the connection
         while (clientIsConnected) {
