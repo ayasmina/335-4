@@ -12,7 +12,7 @@ public class ClientGUI {
 
     public static void main(String[] args) {
         new ClientGUI();
-        //new ClientGUI();
+        new ClientGUI();
     }
     public class BackgroundPanel extends JPanel {
         private Image backgroundImage;
@@ -334,6 +334,18 @@ public class ClientGUI {
         JTextField emailField = new JTextField(20);
         JButton registerButton = new JButton("Register");
 
+        JCheckBox showPasswordCheckbox = new JCheckBox("Show Password");
+        showPasswordCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordCheckbox.isSelected()) {
+                    passwordField.setEchoChar((char) 0); // Show the password
+                } else {
+                    passwordField.setEchoChar('*'); // Hide the password
+                }
+            }
+        });
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(20, 20, 20, 20);
@@ -373,9 +385,14 @@ public class ClientGUI {
         gbc.gridy = 6;
         registerFrame.add(passwordField, gbc);
 
-        // Add register button
         gbc.gridx = 0;
         gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        registerFrame.add(showPasswordCheckbox, gbc);
+
+        // Add register button
+        gbc.gridx = 0;
+        gbc.gridy = 8;
         registerFrame.add(registerButton, gbc);
 
         registerButton.addActionListener(new ActionListener() {
