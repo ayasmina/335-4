@@ -93,13 +93,12 @@ public class Network {
 
     public String receive(){
         String res = "";
-      try {
-          res = datain.readLine();
-      } catch (IOException e){
-          e.printStackTrace();
-          System.exit(1);
-      }
-      return res;
+        try {
+            res = datain.readLine();
+        } catch (IOException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return res;
     }
 }
-

@@ -1,7 +1,8 @@
 package client;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 //  Core Program Logic
 //  Client Class creates a connection and allows the user to perform operations
@@ -272,7 +273,27 @@ public class Client {
         }   //  End Else
         return response;
     }   //  --  End  Update Password Method --
+    //  --  Server Application Example Method   --
     public String serverApplication(){
-        return "Done.";
-    }
+        String outputGUI = "";
+        String response = "";
+        String request = "8" + "example";
+        if (clientIsLoggedIn) { //  If client is logged in
+            response = clientConnection.send(request);  //  Send "Application" request
+            System.out.println("CLIENT receive: " + response);  //  Display Logic
+            //  Handle server response
+            char readServerOperation = response.charAt(0);
+            //  Read Server response with first character key
+            if (readServerOperation == '0') {   //  '0'=Success
+                outputGUI = "0Successful Application Usage";
+                System.out.println(outputGUI);  //  Display Logic
+            } else {    //  If response is not a '0' then operation failed for some reason
+                outputGUI = "1An error occurred.";
+                System.out.println(outputGUI);  //  Display Logic
+            }   //  End Else
+        } else {    //  If Client is not logged in
+            System.out.println("2Not logged in.");   //  Display Logic
+        }   //  End Else
+        return outputGUI;
+    }   //  --  End Server Application Method   --
 }   //  END CLIENT CLASS

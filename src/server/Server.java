@@ -26,7 +26,9 @@ public class Server {
         clientConnections = new Vector<>();
         this.userDB = new DBMS();
         userDB.syncUserList();
-        userDB.printUserList();
+        userDB.logoutAll(userDB);
+        userDB.disconnectAll(userDB);
+        //userDB.printUserList();   //  Unit Test
     }   //  --  End Server Constructor  --
     //  --  Start Server From GUI Method    --
     public static void startServer(){
@@ -117,10 +119,8 @@ public class Server {
             System.out.println("Server stopped listening.");
         }   //  End Finally
     }   //  --  End Listen Method   --
-
     //  -- CLIENT OPERATIONS --
-
-    //  -- Log in to Server Method  --
+    //  -- Log in to Server Method (1) --
     public String login(String username, String pass) {
         //  Login variables
         String response = "";
@@ -144,8 +144,21 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Login Method    --
-
-    //  --  Password Recovery Method    --
+    //  --  Register New User Method (2)    --
+    public String register(String username, String password, String email) {
+        String response = "";
+        int index = indexOfUser(username);
+        if (index != -1) response = "1"; //  Username exists
+        else {
+            User account = new User(username, password, email); //  Create new user
+            userDB.registerUser(account);   //  Add new user to database
+            userDB.syncUserList();  //  Sync database to array list
+            System.out.println(User.userList.size());
+            response = "0"; // successful registration
+        }   //  End Else
+        return response;
+    }   //  --  End Register Method --
+    //  --  Password Recovery Method (3)   --
     public String passwordRecovery(String username) {
         SendEmail email = new SendEmail();
         String response = "";
@@ -162,23 +175,7 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Password Recovery Method    --
-
-    //  --  Register New User Method    --
-    public String register(String username, String password, String email) {
-        String response = "";
-        int index = indexOfUser(username);
-        if (index != -1) response = "1"; //  Username exists
-        else {
-            User account = new User(username, password, email); //  Create new user
-            userDB.registerUser(account);   //  Add new user to database
-            userDB.syncUserList();  //  Sync database to array list
-            System.out.println(User.userList.size());
-            response = "0"; // successful registration
-        }   //  End Else
-        return response;
-    }   //  --  End Register Method --
-
-    //  --  Logout Method   --
+    //  --  Logout Method (4)   --
     public String logout(String username){
         String response = "";
         int index = indexOfUser(username);
@@ -191,24 +188,7 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Logout Method   --
-
-    // -- Shutdown Method -- //
-    public String shutdown(String username){
-        String response = "";
-        int index = indexOfUser(username);
-        if (index == -1) response = "1"; //  Username does not exists
-        else {
-            String logoutSuccess = logout(username);
-            if(!logoutSuccess.equals("0")){
-                response = "1Logout Error";
-            } else {
-                response = "5";
-            }   //  End Else
-        }   //  End Else
-        return response;
-    }   //  --  End Shutdown Method --
-
-    // -- New Password Method -- //
+    // -- Update Password Method -- //
     public String updatePassword(String username, String newPass){
         String response = "";
         int index = indexOfUser(username);
@@ -221,7 +201,20 @@ public class Server {
         }
         return response;
     } // -- End New Password Method -- //
-
+    public String shutdown(String username){
+        String response = "";
+        int index = indexOfUser(username);
+        if (index == -1) response = "1"; //  Username does not exists
+        else {
+            String logoutSuccess = logout(username);
+            if(!logoutSuccess.equals("0")){
+                response = "1Logout Error";
+            } else {
+                response = "disconnect";
+            }   //  End Else
+        }   //  End Else
+        return response;
+    }   //  --  End Shutdown Method --
     //  --  Index Of User Method (-1 for no matches)    --
     public int indexOfUser(String username){
         for(int i = 0; i < User.userList.size(); ++i){
@@ -232,7 +225,6 @@ public class Server {
         }   //  End For
         return -1;
     }   //  --  End Index Of User Method    --
-
     //  --  Parse Input from Network Class Method   --
     // Using 0 and 1 for True and False responses in places applicable, extending beyond 0 and 1 when needed
     public String parseInput(String data){
@@ -301,12 +293,17 @@ public class Server {
                         username = info[0];
                         pass = info[1];
                         response = updatePassword(username, pass);
+                        break;
+                    case '8':
+                        System.out.println("Server Application");
+                        response = serverApplication();
+                        break;
                     default : // in case it's not entering a case for some reason so we know
-                       response = ("Error with switch loop.");
+                        response = ("Error with switch loop.");
                 }   //  End Switch (operation)
             }   //  End If (data length > 1)
         }   //  End If (Data is not null)
-        //System.out.println("SERVER sending: " + response);
+        System.out.println("SERVER sending: " + response);
         return response;
     }
     public synchronized List<String> getLoggedInUsers() {
@@ -321,7 +318,6 @@ public class Server {
     public int getNumberOfLoggedInUsers(){
         return getLoggedInUsers().size();
     }
-
     public synchronized List<String> getLockedOutUsers() {
         List<String> LockedOutUsers = new ArrayList<>();
         for (User account : User.userList) {
@@ -337,13 +333,10 @@ public class Server {
     public int getNumberOfLockedOutUsers(){
         return getLockedOutUsers().size();
     }
-
     public synchronized int getNumberOfRegisteredUsers() {
         return User.userList.size();
     }
-
     public String serverApplication(){
-        String result = "Server Use!";
-        return result;
+        return "0Good Job!";
     }
 }

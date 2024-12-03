@@ -62,14 +62,13 @@ import java.util.Properties;
 import javax.mail.*;
 import javax.mail.internet.*;
 
-// add debugging thing in here in case the user / password doesn't work
 public class SendEmail {
     // -- set the gmail host URL
     final static private String host = "smtp.gmail.com";
 
     // -- You must have a valid gmail username/password pair to use gmail as a SMTP service
-    static private String username = "lynncsc355";
-    static private String password = "eubd npfs nsxc xcub\n";
+    static private String username = "casspassrecovery";
+    static private String password = "eslv wtrn nybd mxbi\n";
     private String tempPass = "abcd$1234";
     private String messagetext = "Here is your password : " + tempPass;
     private String from = "";
