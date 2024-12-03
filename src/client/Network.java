@@ -21,19 +21,26 @@ public class Network {
 
     // In given code: this was the public Client() method in Client.java
     // Client Network Object
-    public Network(String host){
+    public Network(String host) throws UnknownHostException, SocketTimeoutException, IOException{
         try {
             // -- construct the peer to peer socket
-            socket = new Socket(host, PORT);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host, PORT), 1000);
             // -- wrap the socket in stream I/O objects
             datain = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             dataout = new DataOutputStream(socket.getOutputStream());
         } catch (UnknownHostException e) {
             System.out.println("Host " + host + " at port " + PORT + " is unavailable.");
-            System.exit(1);
+            throw new UnknownHostException("Host " + host + " at port " + PORT + " is unavailable.");
+            //System.exit(1);
+        }  catch (SocketTimeoutException e ){
+            System.out.println("Connect to " + host + " has timed out.");
+            throw new SocketTimeoutException("Connect to " + host + " has timed out.");
+            //System.exit(1);
         } catch (IOException e) {
             System.out.println("Unable to create I/O streams.");
-            System.exit(1);
+            throw new IOException("Unable to create I/O streams.");
+            //System.exit(1);
         }
     }
 
@@ -80,15 +87,18 @@ public class Network {
         return rtnmsg;
     }
 
+    public int getId(){
+        return this.id;
+    }
+
     public String receive(){
         String res = "";
-      try {
-          res = datain.readLine();
-      } catch (IOException e){
-          e.printStackTrace();
-          System.exit(1);
-      }
-      return res;
+        try {
+            res = datain.readLine();
+        } catch (IOException e){
+            e.printStackTrace();
+            System.exit(1);
+        }
+        return res;
     }
 }
-
