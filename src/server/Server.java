@@ -302,11 +302,11 @@ public class Server {
                         pass = info[1];
                         response = updatePassword(username, pass);
                     default : // in case it's not entering a case for some reason so we know
-                        response = ("Error with switch loop.");
+                       response = ("Error with switch loop.");
                 }   //  End Switch (operation)
             }   //  End If (data length > 1)
         }   //  End If (Data is not null)
-        System.out.println("SERVER sending: " + response);
+        //System.out.println("SERVER sending: " + response);
         return response;
     }
     public synchronized List<String> getLoggedInUsers() {
