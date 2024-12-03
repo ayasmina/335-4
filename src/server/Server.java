@@ -117,9 +117,7 @@ public class Server {
             System.out.println("Server stopped listening.");
         }   //  End Finally
     }   //  --  End Listen Method   --
-
     //  -- CLIENT OPERATIONS --
-
     //  -- Log in to Server Method  --
     public String login(String username, String pass) {
         //  Login variables
@@ -144,7 +142,6 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Login Method    --
-
     //  --  Password Recovery Method    --
     public String passwordRecovery(String username) {
         SendEmail email = new SendEmail();
@@ -162,7 +159,6 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Password Recovery Method    --
-
     //  --  Register New User Method    --
     public String register(String username, String password, String email) {
         String response = "";
@@ -177,7 +173,6 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Register Method --
-
     //  --  Logout Method   --
     public String logout(String username){
         String response = "";
@@ -191,8 +186,6 @@ public class Server {
         }   //  End Else
         return response;
     }   //  --  End Logout Method   --
-
-    // -- Shutdown Method -- //
     public String shutdown(String username){
         String response = "";
         int index = indexOfUser(username);
@@ -202,12 +195,11 @@ public class Server {
             if(!logoutSuccess.equals("0")){
                 response = "1Logout Error";
             } else {
-                response = "5";
+                response = "disconnect";
             }   //  End Else
         }   //  End Else
         return response;
     }   //  --  End Shutdown Method --
-
     // -- New Password Method -- //
     public String updatePassword(String username, String newPass){
         String response = "";
@@ -221,7 +213,6 @@ public class Server {
         }
         return response;
     } // -- End New Password Method -- //
-
     //  --  Index Of User Method (-1 for no matches)    --
     public int indexOfUser(String username){
         for(int i = 0; i < User.userList.size(); ++i){
@@ -232,7 +223,6 @@ public class Server {
         }   //  End For
         return -1;
     }   //  --  End Index Of User Method    --
-
     //  --  Parse Input from Network Class Method   --
     // Using 0 and 1 for True and False responses in places applicable, extending beyond 0 and 1 when needed
     public String parseInput(String data){
@@ -289,7 +279,7 @@ public class Server {
                         break;
                     case '5':
                         System.out.println("Disconnect");
-                        username = info[0];
+                        response = "5";
                         break;
                     case '6':
                         System.out.println("Shutdown");
@@ -302,11 +292,11 @@ public class Server {
                         pass = info[1];
                         response = updatePassword(username, pass);
                     default : // in case it's not entering a case for some reason so we know
-                       response = ("Error with switch loop.");
+                        response = ("Error with switch loop.");
                 }   //  End Switch (operation)
             }   //  End If (data length > 1)
         }   //  End If (Data is not null)
-        //System.out.println("SERVER sending: " + response);
+        System.out.println("SERVER sending: " + response);
         return response;
     }
     public synchronized List<String> getLoggedInUsers() {
@@ -321,7 +311,6 @@ public class Server {
     public int getNumberOfLoggedInUsers(){
         return getLoggedInUsers().size();
     }
-
     public synchronized List<String> getLockedOutUsers() {
         List<String> LockedOutUsers = new ArrayList<>();
         for (User account : User.userList) {
@@ -331,15 +320,15 @@ public class Server {
         }   //  End For
         return LockedOutUsers;
     }
-
+    public int getNumberOfConnections(){
+        return clientConnections.size();
+    }
     public int getNumberOfLockedOutUsers(){
         return getLockedOutUsers().size();
     }
-
     public synchronized int getNumberOfRegisteredUsers() {
         return User.userList.size();
     }
-
     public String serverApplication(){
         String result = "Server Use!";
         return result;
