@@ -7,8 +7,8 @@ import java.awt.event.*;
 public class ClientGUI {
     private Client client;
     private JFrame connectFrame, loginFrame, dashboardFrame, forgottenPassFrame, registerFrame, updatePasswordFrame;
-    int x;
-    int y;
+    // Coords for window locations
+    int x, y;
 
     public static void main(String[] args) {
         new ClientGUI();
@@ -429,11 +429,11 @@ public class ClientGUI {
                 String email = emailField.getText();
                 String successMsg = "User successfully registered.";
 
-                String response = client.register(username, password, email);
-                JOptionPane.showMessageDialog(registerFrame, response);
+                String result = client.register(username, password, email);
+                JOptionPane.showMessageDialog(registerFrame, result);
 
                 // Close the registration frame
-                if(response.equals(successMsg)) {
+                if(result.equals(successMsg)) {
                     registerFrame.dispose();
                 }
             }
@@ -478,14 +478,20 @@ public class ClientGUI {
         recoverButton.addActionListener((ActionEvent e) -> {
             String username = usernameField.getText();
             if (!username.isEmpty()) {
-                String response = client.recoverPassword(username);
-                System.out.println(response);
-                JOptionPane.showMessageDialog(forgottenPassFrame, response);
+                String result = client.recoverPassword(username);
+                char operation = result.charAt(0);
+                result = result.substring(1);
+                if (operation == '0') {
+                    System.out.println(result);
+                    JOptionPane.showMessageDialog(forgottenPassFrame, result);
+                    forgottenPassFrame.dispose();
+                } else {
+                    System.out.println(result);
+                    JOptionPane.showMessageDialog(forgottenPassFrame, result);
+                }
+            } else {
+                JOptionPane.showMessageDialog(forgottenPassFrame, "Please enter a username!", "Error", JOptionPane.ERROR_MESSAGE);
             }
-//            else {
-//                JOptionPane.showMessageDialog(forgottenPassFrame, "Please enter a username!", "Error", JOptionPane.ERROR_MESSAGE);
-//            }
-            forgottenPassFrame.dispose();
         });
 
         forgottenPassFrame.setVisible(true);

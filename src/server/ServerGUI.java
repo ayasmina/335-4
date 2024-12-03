@@ -6,15 +6,10 @@ import java.awt.*;
 import java.util.List;
 
 public class ServerGUI extends JFrame {
-    private JButton startButton;
-    private JButton stopButton;
-    private JButton updateButton;
+    private JButton startButton, stopButton, updateButton;
     private JTable usersTable;
     private DefaultTableModel tableModel;
-    private JLabel statusLabel;
-    private JLabel registeredAccountsLabel;
-    private JLabel connectedAccountsLabel;
-    private JLabel loggedAccountsLabel;
+    private JLabel statusLabel, registeredAccountsLabel, connectedAccountsLabel, loggedAccountsLabel;
 
     private Server serverInstance;
     private Thread serverThread;
