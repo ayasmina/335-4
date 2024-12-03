@@ -19,12 +19,16 @@ public class ServerGUI extends JFrame {
     private Thread serverThread;
     private boolean isServerRunning = false;
 
+
+
+
     public ServerGUI() {
         setTitle("Server Management Console");
         setSize(700, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // Control panel
         JPanel controlPanel = new JPanel();
         startButton = new JButton("Start Server");
         stopButton = new JButton("Stop Server");
@@ -36,12 +40,18 @@ public class ServerGUI extends JFrame {
         controlPanel.add(updateButton);
 
         JPanel statusPanel = new JPanel();
+        statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.Y_AXIS));
+
         statusLabel = new JLabel("Server Status: Stopped");
         registeredAccountsLabel = new JLabel("Registered Accounts: 0");
         connectedAccountsLabel = new JLabel("Connected Accounts: 0");
         statusPanel.add(statusLabel);
+        statusPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         statusPanel.add(registeredAccountsLabel);
+        statusPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         statusPanel.add(connectedAccountsLabel);
+        JPanel centeredStatusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        centeredStatusPanel.add(statusPanel);
 
         String[] columnNames = {"Logged-In Users", "Locked-Out Users"};
         tableModel = new DefaultTableModel(columnNames, 0);
@@ -50,10 +60,11 @@ public class ServerGUI extends JFrame {
 
         add(controlPanel, BorderLayout.NORTH);
         add(tableScrollPane, BorderLayout.CENTER);
-        add(statusPanel, BorderLayout.SOUTH);
+        add(centeredStatusPanel, BorderLayout.SOUTH); 
 
         setupActionListeners();
     }
+
 
     private void setupActionListeners() {
         startButton.addActionListener(e -> startServer());
@@ -140,6 +151,7 @@ public class ServerGUI extends JFrame {
                     "Update Error",
                     JOptionPane.WARNING_MESSAGE);
         }
+
     }
 
     public static void main(String[] args) {
@@ -148,4 +160,5 @@ public class ServerGUI extends JFrame {
             gui.setVisible(true);
         });
     }
+
 }
