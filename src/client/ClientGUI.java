@@ -329,6 +329,7 @@ public class ClientGUI {
 
         updatePasswordFrame.setVisible(true);
     }
+
     private void openRegisterWindow(int newX, int newY) {
         // Set up the registration frame with background image
         String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update the path as needed

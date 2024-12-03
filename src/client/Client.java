@@ -19,9 +19,12 @@ public class Client {
     public Client() {
         HOST = "";
     }   //  --  End Client Constructor  --
+
     //  --  CLIENT OPERATIONS   --
+
     //  !!NOTE: Operations are identified via a character key!!
     //  Operations Key: 0=Connect, 1=Login, 2=Register User, 3=Password Recovery, 4=Logout, 5=Disconnect
+
     // --   Connect Clients to Server Method (0)    --
     public String connect(String host) {
         //  Connection variables
@@ -55,6 +58,7 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End Connect Method  --
+
     //  --  Login Request Method (1)    --
     public String login(String username, String password) {
         //  Login variables
@@ -105,6 +109,7 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End Login Method    --
+
     //  --  Register A New User Method (2)  --
     public String register(String newUsername, String userPassword, String userEmail) {
         //  Register variables
@@ -144,6 +149,7 @@ public class Client {
         }   //  End Else If
         return outputGUI;
     }   //  --  End Register    --
+
     //  --  Recover Password Method (3) --
     public String recoverPassword(String username) {
         //  Recover password variables
@@ -173,6 +179,7 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End Recover Password Method --
+
     //  --  Logout Method (4)   --
     public String logout() {
         //  Logout variables
@@ -198,6 +205,7 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End Logout Method   --
+
     //  --  Disconnect Client from Server Method (5)    --
     public String disconnect() {
         //  Disconnect variables
@@ -222,6 +230,7 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End Disconnect Method   --
+
     //  --  Shutdown Method (6) --
     public String shutdown(){
         String outputGUI = "";
@@ -248,6 +257,7 @@ public class Client {
         }   //  End Switch
         return outputGUI;
     }   //  --  End Shutdown Method --
+
     //  --  Update Password Method (7)  --
     public String updatePassword(String newPassword){
         String outputGUI = "";
@@ -273,6 +283,7 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End  Update Password Method --
+
     //  --  Server Application Example Method   --
     public String serverApplication(){
         String outputGUI = "";
@@ -296,4 +307,5 @@ public class Client {
         }   //  End Else
         return outputGUI;
     }   //  --  End Server Application Method   --
+
 }   //  END CLIENT CLASS

@@ -17,7 +17,7 @@ public class Server {
     public static final int PORT = 8000;
     //public SendEmail email = new SendEmail();
     DBMS userDB;
-    // -- Server Constructor  --
+    // -- Server Constructor  -- //
     public Server() {
         //  Construct the list of active client threads
         clientConnections = new Vector<MultiThread>();
@@ -26,12 +26,14 @@ public class Server {
         userDB.logoutAll(userDB);
         userDB.disconnectAll(userDB);
         //userDB.printUserList();   //  Unit Test
-    }   //  --  End Server Constructor  --
-    //  --  Start Server From GUI Method    --
+    }   //  --  End Server Constructor  -- //
+
+    //  --  Start Server From GUI Method    -- //
     public static void startServer(){
         new Server();
-    }   //  --  End Start Server Method --
-    //  --  Stop Server Method  --
+    }   //  --  End Start Server Method -- //
+
+    //  --  Stop Server Method  -- //
     public void stop() {
         isRunning = false;  // Set flag to stop the loop
         try {
@@ -52,10 +54,12 @@ public class Server {
             System.out.println(e);
         }
     }
-    //  --  Get Port Method --
+
+    //  --  Get Port Method -- //
     public static int getPort() {
         return PORT;
-    }   //  --  End Get Port Method --
+    }   //  --  End Get Port Method -- //
+
     //  --  Peer Connection Creation Method --
     private void peerConnection(Socket socket) {
         //  Create a thread communication when client arrives
@@ -70,7 +74,8 @@ public class Server {
         //  Place some text in the area to let the server operator know what is going on
         System.out.println("SERVER: connection received for id " + nextId + "\n");
         ++nextId;
-    }   //  --  End Peer Connection Method  --
+    }   //  --  End Peer Connection Method  -- //
+
     //  --  Remove ID of individual Client Object Method    --
     public void removeID(int ID) {  // Called by a ServerThread after a client is terminated
         //  Find the object belonging to the client thread being terminated
@@ -85,9 +90,9 @@ public class Server {
                 break;
             }   //  End If
         }   //  End For
-    }   //  --  End Remove ID Method    --
+    }   //  --  End Remove ID Method    -- //
 
-    //  --  Server Listens For New Connections Method  --
+    //  --  Server Listens For New Connections Method  -- //
     public void listen() {
         try {
             serversocket = new ServerSocket(PORT);
@@ -118,9 +123,11 @@ public class Server {
             }   //  End Catch
             System.out.println("Server stopped listening.");
         }   //  End Finally
-    }   //  --  End Listen Method   --
-    //  -- CLIENT OPERATIONS --
-    //  -- Log in to Server Method (1) --
+    }   //  --  End Listen Method   -- //
+
+    //  -- CLIENT OPERATIONS -- //
+
+    //  -- Log in to Server Method (1) -- //
     public String login(String username, String pass) {
         //  Login variables
         String response = "";
@@ -143,8 +150,9 @@ public class Server {
             }   //  End Else
         }   //  End Else
         return response;
-    }   //  --  End Login Method    --
-    //  --  Register New User Method (2)    --
+    }   //  --  End Login Method    -- //
+
+    //  --  Register New User Method (2)    -- //
     public String register(String username, String password, String email) {
         String response = "";
         int index = indexOfUser(username);
@@ -158,8 +166,9 @@ public class Server {
             response = "0"; // successful registration
         }   //  End Else
         return response;
-    }   //  --  End Register Method --
-    //  --  Password Recovery Method (3)   --
+    }   //  --  End Register Method -- //
+
+    //  --  Password Recovery Method (3)   -- //
     public String passwordRecovery(String username) {
         SendEmail email = new SendEmail();
         String response = "";
@@ -175,8 +184,9 @@ public class Server {
             response = "0"; //  Sending back to parseInput
         }   //  End Else
         return response;
-    }   //  --  End Password Recovery Method    --
-    //  --  Logout Method (4)   --
+    }   //  --  End Password Recovery Method    -- //
+
+    //  --  Logout Method (4)   -- //
     public String logout(String username){
         String response = "";
         int index = indexOfUser(username);
@@ -188,7 +198,8 @@ public class Server {
             response = "0";
         }   //  End Else
         return response;
-    }   //  --  End Logout Method   --
+    }   //  --  End Logout Method   -- //
+
     // -- Update Password Method -- //
     public String updatePassword(String username, String newPass){
         String response = "";
@@ -202,6 +213,8 @@ public class Server {
         }
         return response;
     } // -- End New Password Method -- //
+
+    // -- Shutdown Method -- //
     public String shutdown(String username){
         String response = "";
         int index = indexOfUser(username);
@@ -215,8 +228,9 @@ public class Server {
             }   //  End Else
         }   //  End Else
         return response;
-    }   //  --  End Shutdown Method --
-    //  --  Index Of User Method (-1 for no matches)    --
+    }   //  --  End Shutdown Method -- //
+
+    //  --  Index Of User Method (-1 for no matches)    -- //
     public int indexOfUser(String username){
         for(int i = 0; i < User.userList.size(); ++i){
             User testMatch = User.userList.get(i);
@@ -225,8 +239,9 @@ public class Server {
             }   //  End If
         }   //  End For
         return -1;
-    }   //  --  End Index Of User Method    --
-    //  --  Parse Input from Network Class Method   --
+    }   //  --  End Index Of User Method    -- //
+
+    //  --  Parse Input from Network Class Method   -- //
     // Using 0 and 1 for True and False responses in places applicable, extending beyond 0 and 1 when needed
     public String parseInput(String data){
         System.out.println("Received data: " + data);
@@ -307,6 +322,8 @@ public class Server {
         System.out.println("SERVER sending: " + response);
         return response;
     }
+
+
     public synchronized List<String> getLoggedInUsers() {
         List<String> loggedInUsers = new ArrayList<>();
         for (User account : User.userList) {
