@@ -80,6 +80,10 @@ public class Network {
         return rtnmsg;
     }
 
+    public int getId(){
+        return this.id;
+    }
+
     public String receive(){
         String res = "";
       try {

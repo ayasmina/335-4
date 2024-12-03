@@ -1,30 +1,33 @@
 package server;
+import java.sql.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+
 //  !!!WARNING: MAKE SURE THE JDBC CONNECTOR JAR IS IN THE BUILD PATH!!!
 public class DBMS {
     //  Username and password for MySQL workbench connection
-    private static final String usernameSQL = "CassCo";
-    private static final String passwordSQL = "Password.";
+    private static final String USERNAME = "CassCo";
+    private static final String PASSWORD = "Password.";
     // Objects to be used for database access
     private Connection connection = null;
     private Statement statement = null;
     private ResultSet result = null;
     //  Connect to the "UserDatabase" database scheme,
-    //  Default port is 3306 (jdbc:mysql://<ip address>:<port>/<schema>)
-    private final String schema = "sys";
-    private final String table = "users";
-    private final String url = "jdbc:mysql://127.0.0.1:3306/" + schema;
+    //  Default port is 3306 (jdbc:mysql://<ip address>:<port>/<SCHEMA>)
+    private final String SCHEMA = "sys";
+    private final String TABLE = "users";
+    private final String URL = "jdbc:mysql://127.0.0.1:3306/" + SCHEMA;
     //  Constructor for DBMS
-    public DBMS (String username, String password) {
+    public DBMS () {
         try {
             // Make connection to the database
-            connection = DriverManager.getConnection(url, username, password);
-            // These will send queries to the database
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            // These will Send queries to the database
             statement = connection.createStatement();
             result = statement.executeQuery("SELECT VERSION()");
             if (result.next()) {
@@ -33,58 +36,125 @@ public class DBMS {
         }   //  End Try
         catch (SQLException ex) {
             //  Handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            handleSQLException(ex);
         }   //  End Catch
     }   //  End DBMS Constructor
-    //  Accesses Preform Operations in MySQL Database
-    public void accessDatabase() {
-        try {
-            // Query will return a ResultSet then get and print all records in the table
-            System.out.println("Original Contents");
-            String SQL = "SELECT * FROM " + table + ";";
-            result = statement.executeQuery(SQL);
-            printResultSet(result);
-            // Insert new user into the table
-            System.out.println("Inserted Contents");    //  Display Logic
-            String username = "'testUsername'"; // SQL expects strings to be single quoted
-            String password = "'testUsername'";
-            int connected = 0;
-            int loggedIn = 0;
-            int strikes = 0;
-            statement.executeUpdate("INSERT INTO " + table + " VALUE(" + username + ", " + password + ", " + connected + ", " + loggedIn + "," +  strikes + ");");
-            // Get and print all records in the table
-            result = statement.executeQuery("SELECT * FROM " + table + ";");
-            printResultSet(result);
-            // Modify a record in the table and get the result set of records
-            result = statement.executeQuery("SELECT * FROM " + table + " WHERE Username=" + username + ";");
-            //  Move the iterator to the record, if there is no record this will throw an exception???
-            result.next();
-            //  Get the strikes column and convert it to integer
-            strikes = Integer.parseInt(result.getString(5));
-            System.out.println("Updated Contents");
-            statement.executeUpdate("UPDATE " + table + " SET strikes=" + (strikes + 1) + " WHERE Username=" + username + ";");
-            // Get and print all records in the table
-            result = statement.executeQuery("SELECT * FROM " + table + " WHERE Username=" + username + ";");
-            printResultSet(result);
-            //  Delete Record
-            result = statement.executeQuery("DELETE * FROM " + table + " WHERE Username=" + username + ";");
-            // Get and print all records in the table
-            result = statement.executeQuery("SELECT * FROM " + table + " WHERE Username=" + username + ";");
-            System.out.println("should be blank");
-            printResultSet(result);
-        }   //  End try
-        catch (SQLException ex) {
-            //  Handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
-        }   //  End Catch
-    }   //  End Access Database
-    //  Print Result Set from SQL table
-    public void printResultSet(ResultSet resultSet)
-    {
+    // Centralized synchronization method
+    public void syncUserList() {
+        String query = "SELECT * FROM " + TABLE;
+        try (PreparedStatement ps = connection.prepareStatement(query);
+             ResultSet resultSet = ps.executeQuery()) {
+            User.userList.clear();
+            while (resultSet.next()) {
+                String username = resultSet.getString("Username");
+                String password = resultSet.getString("Password");
+                String email = resultSet.getString("Email");
+                int connected = resultSet.getInt("Connected");
+                int loggedIn = resultSet.getInt("LoggedIn");
+                int strikes = resultSet.getInt("Strikes");
+                int lockedOut = resultSet.getInt("LockedOut");
+                User.userList.add(new User(username, password, email, connected, loggedIn, strikes, lockedOut));
+            }
+            System.out.println("User list synchronized successfully.");
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+    }
+    public boolean updateStringField(String fieldName, String newValue, String username) {
+        String query = "UPDATE " + TABLE + " SET " + fieldName + " = ? WHERE Username = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, newValue);
+            ps.setString(2, username);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                syncUserList();
+                return true;
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return false;
+    }
+    public boolean updateIntField(String fieldName, int newValue, String username) {
+        String query = "UPDATE " + TABLE + " SET " + fieldName + " = ? WHERE Username = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setInt(1, newValue);
+            ps.setString(2, username);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                syncUserList();
+                return true;
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return false;
+    }
+    public User selectUser(String username) {
+        String query = "SELECT * FROM " + TABLE + " WHERE Username = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new User(rs.getString("Username"), rs.getString("Password"), rs.getString("Email"));
+                }
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return null;
+    }
+    public boolean deleteUser(String username) {
+        String query = "DELETE FROM " + TABLE + " WHERE Username = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, username);
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                syncUserList();
+                return true;
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return false;
+    }
+    public boolean registerUser(User user) {
+        if (selectUser(user.getUsername()) != null) {
+            System.out.println("Username already exists!");
+            return false;
+        }
+        String query = "INSERT INTO " + TABLE + " (Username, Password, Email) VALUES (?, ?, ?)";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, user.getPassword());
+            ps.setString(3, user.getEmail());
+            ps.executeUpdate();
+            syncUserList();
+            return true;
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return false;
+    }
+    public boolean updateUserPassword(User user, String newPassword, DBMS userDB) {
+        String queryUpdate = "UPDATE " + TABLE + " SET Password = ? WHERE Username = ?";
+        try (PreparedStatement ps = connection.prepareStatement(queryUpdate)) {
+            ps.setString(1, newPassword);
+            ps.setString(2, user.getUsername());
+            int rowsAffected = ps.executeUpdate();
+            if (rowsAffected > 0) {
+                user.resetStrikes(userDB);
+                user.setLocked(false, userDB);
+                syncUserList(); // Synchronize after update
+                return true;
+            }
+        } catch (SQLException e) {
+            handleSQLException(e);
+        }
+        return false;
+    }
+
+    public void printResultSet(ResultSet resultSet) {
         try {
             // Metadata contains how many columns in the data
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -94,25 +164,68 @@ public class DBMS {
             //  Loop through the ResultSet one row at a time
             //  !!NOTE: The ResultSet starts at index 1!!
             while (resultSet.next()) {
+                ArrayList<String> userData = new ArrayList<>();
                 // Loop through the columns of the ResultSet (Starting at 1)
                 for (int i = 1; i < numberOfColumns; ++i) {
-                    System.out.print(resultSet.getString(i) + "\t");    //  Display logic
+                    String columnData = resultSet.getString(i);
+                    userData.add(columnData);
+                    System.out.print(columnData + "\t");  // Optional display logic
                 }   //  End For
-                System.out.println(resultSet.getString(numberOfColumns));
+                System.out.println(); // End of row
+                logUser(userData);
             }   // End While
         }   //  End Try
         catch (SQLException ex) {
             //  Handle any errors
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+            handleSQLException(ex);
         }   //  End Catch
     }   //  End Print Result
-    //  Main test
-    public static void LoadUserDatabase() {
-        // Make the JDBC connection (Java Database Connectivity)
-        DBMS dbc = new DBMS(usernameSQL, passwordSQL);
-        // Perform some SQL operations
-        dbc.accessDatabase();
-    }   //  End Main
-}   //  End DBMS Class
+    public void logUser(ArrayList<String> userData){
+        try {
+            if (userData.size() >= 3) {  // Ensure enough fields are available
+                User newUser = new User(userData.get(0), userData.get(1), userData.get(2));
+                User.userList.add(newUser);  // Add the user to the static list
+            } else {
+                System.out.println("Insufficient user data to log.");
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create or log user: " + e.getMessage());
+        }
+    }
+    public void printUserList() {
+        if (User.userList.isEmpty()) {
+            System.out.println("No users available.");
+        } else {
+            System.out.println("Current Users:");
+            for (User user : User.userList) {
+                System.out.println(user.getUserDetails());
+            }
+        }
+    }
+    public void disconnectAll(DBMS userDB){
+        for(int i = 0; i < User.userList.size(); ++i){
+            User.userList.get(i).setConnected(false, userDB);
+        }
+    }
+    public void logoutAll(DBMS userDB){
+        for(int i = 0; i < User.userList.size(); ++i){
+            User.userList.get(i).setLogged(false, userDB);
+        }
+    }
+    public void close() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }   //  End If
+        }   //  End Try
+        catch (SQLException e) {
+            System.out.println(e);
+        }   //  End Catch
+    }   //  --  End Close Method    --
+    //  --  Handle SQL Exceptions Method    --
+    private void handleSQLException(SQLException e) {
+        System.err.println("SQLException: " + e.getMessage());
+        System.err.println("SQLState: " + e.getSQLState());
+        System.err.println("VendorError: " + e.getErrorCode());
+    }   //  --  End Handle SQL Exception Method --
+}   //  END DBMS CLASS
