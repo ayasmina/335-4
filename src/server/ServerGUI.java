@@ -19,9 +19,12 @@ public class ServerGUI extends JFrame {
     private Thread serverThread;
     private boolean isServerRunning = false;
 
-
-
-
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            ServerGUI gui = new ServerGUI();
+            gui.setVisible(true);
+        });
+    }
     public ServerGUI() {
         setTitle("Server Management Console");
         setSize(700, 500);
@@ -67,7 +70,28 @@ public class ServerGUI extends JFrame {
 
         setupActionListeners();
     }
-    private void positionFrameInTopRightCorner() {
+/*  Potential Background Element Addition
+    public class BackgroundPanel extends JPanel {
+        private Image backgroundImage;
+
+        public BackgroundPanel(String imagePath) {
+            try {
+                backgroundImage = Toolkit.getDefaultToolkit().getImage(imagePath);
+            } catch (Exception e) {
+                System.err.println("Error loading background image: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (backgroundImage != null) {
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            }
+        }
+    }
+*/
+private void positionFrameInTopRightCorner() {
         // Get screen dimensions
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidth = screenSize.width;
@@ -189,12 +213,4 @@ public class ServerGUI extends JFrame {
         }
 
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ServerGUI gui = new ServerGUI();
-            gui.setVisible(true);
-        });
-    }
-
 }
