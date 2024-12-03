@@ -179,8 +179,7 @@ public class ClientGUI {
         dashboardFrame.add(serverAppButton, gbc);
 
         shutdownButton.addActionListener(e -> {
-            client.logout();
-            client.disconnect();
+            client.shutdown();
             JOptionPane.showMessageDialog(dashboardFrame, "Shutdown complete.");
             dashboardFrame.dispose();
         });

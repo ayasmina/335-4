@@ -148,8 +148,9 @@ public class Server {
     public String register(String username, String password, String email) {
         String response = "";
         int index = indexOfUser(username);
-        if (index != -1) response = "1"; //  Username exists
-        else {
+        if (index != -1) {
+            response = "1"; //  Username exists
+        } else {
             User account = new User(username, password, email); //  Create new user
             userDB.registerUser(account);   //  Add new user to database
             userDB.syncUserList();  //  Sync database to array list
@@ -210,7 +211,7 @@ public class Server {
             if(!logoutSuccess.equals("0")){
                 response = "1Logout Error";
             } else {
-                response = "disconnect";
+                response = "5";
             }   //  End Else
         }   //  End Else
         return response;
