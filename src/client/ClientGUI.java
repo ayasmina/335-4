@@ -7,6 +7,8 @@ import java.awt.event.*;
 public class ClientGUI {
     private Client client;
     private JFrame connectFrame, loginFrame, dashboardFrame, forgottenPassFrame, registerFrame, updatePasswordFrame;
+    int x;
+    int y;
 
     public static void main(String[] args) {
         new ClientGUI();
@@ -34,11 +36,12 @@ public class ClientGUI {
 
     public ClientGUI() {
         client = new Client();
-        showConnectWindow();
+        showConnectWindow(500, 300);
     }
 
-    private void showConnectWindow() {
+    private void showConnectWindow(int newX, int newY) {
         connectFrame = new JFrame("Connect");
+        connectFrame.setLocation(newX, newY);
         connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         connectFrame.setSize(400, 200);
         connectFrame.setLayout(new GridBagLayout());
@@ -70,7 +73,8 @@ public class ClientGUI {
             if (success == '0') {
                 JOptionPane.showMessageDialog(connectFrame, output);
                 connectFrame.dispose();
-                showLoginWindow();
+                closingWindow(connectFrame);
+                showLoginWindow(this.x, this.y);
             } else {
                 JOptionPane.showMessageDialog(connectFrame, result, "Connection Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -79,8 +83,9 @@ public class ClientGUI {
         connectFrame.setVisible(true);
     }
 
-    private void showLoginWindow() {
+    private void showLoginWindow(int newX, int newY) {
         loginFrame = new JFrame("Login");
+        loginFrame.setLocation(newX, newY);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(450, 400);
         loginFrame.setLayout(new GridBagLayout());
@@ -93,6 +98,18 @@ public class ClientGUI {
         JButton disconnectButton = new JButton("Disconnect");
         JLabel registerLabel = new JLabel("<html><a href='#'>Not registered? Register</a></html>");
         JLabel forgottenPassLabel = new JLabel("<html><a href='#'>Forgot Password?</a></html>");
+
+        JCheckBox showPasswordCheckbox = new JCheckBox("Show Password");
+        showPasswordCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordCheckbox.isSelected()) {
+                    passwordField.setEchoChar((char) 0); // Show the password
+                } else {
+                    passwordField.setEchoChar('*'); // Hide the password
+                }
+            }
+        });
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -114,17 +131,22 @@ public class ClientGUI {
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
-        loginFrame.add(loginButton, gbc);
+        loginFrame.add(showPasswordCheckbox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 4;
         gbc.gridwidth = 2;
+        loginFrame.add(loginButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
         loginFrame.add(disconnectButton, gbc);
 
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         loginFrame.add(registerLabel, gbc);
 
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         loginFrame.add(forgottenPassLabel, gbc);
 
         loginButton.addActionListener(e -> {
@@ -136,7 +158,8 @@ public class ClientGUI {
             if (success == '0') {
                 JOptionPane.showMessageDialog(loginFrame, output);
                 loginFrame.dispose();
-                showDashboardWindow();
+                closingWindow(loginFrame);
+                showDashboardWindow(x, y);
             } else {
                 JOptionPane.showMessageDialog(loginFrame, result, "Login Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -146,26 +169,28 @@ public class ClientGUI {
             String result = client.disconnect();
             JOptionPane.showMessageDialog(loginFrame,result);
             loginFrame.dispose();
-            showConnectWindow();
+            closingWindow(loginFrame);
+            showConnectWindow(x, y);
         }));
 
         registerLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                openRegisterWindow();
+                openRegisterWindow(x, y);
             }
         });
 
         forgottenPassLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                openForgottenPassWindow();
+                openForgottenPassWindow(x, y);
             }
         });
 
         loginFrame.setVisible(true);
     }
 
-    private void showDashboardWindow() {
+    private void showDashboardWindow(int newX, int newY) {
         dashboardFrame = new JFrame("Dashboard");
+        dashboardFrame.setLocation(newX, newY);
         dashboardFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dashboardFrame.setSize(400, 300);
         dashboardFrame.setLayout(new GridBagLayout());
@@ -198,19 +223,21 @@ public class ClientGUI {
             if (operation == '0'){
                 JOptionPane.showMessageDialog(dashboardFrame, result);
                 dashboardFrame.dispose();
-                showConnectWindow();
+                closingWindow(dashboardFrame);
+                showConnectWindow(x, y);
             } else {
                 JOptionPane.showMessageDialog(dashboardFrame, result);
             }
         });
 
-        updatePasswordButton.addActionListener(e -> showUpdatePasswordWindow());
+        updatePasswordButton.addActionListener(e ->
+                showUpdatePasswordWindow(x, y));
 
         logoutButton.addActionListener(e -> {
             String result = client.logout();
             JOptionPane.showMessageDialog(dashboardFrame, result);
             dashboardFrame.dispose();
-            showLoginWindow();
+            showLoginWindow(x, y);
         });
 
 
@@ -227,8 +254,9 @@ public class ClientGUI {
         dashboardFrame.setVisible(true);
     }
 
-    private void showUpdatePasswordWindow() {
+    private void showUpdatePasswordWindow(int newX, int newY) {
         updatePasswordFrame = new JFrame("Update Password");
+        updatePasswordFrame.setLocation(newX, newY);
         updatePasswordFrame.setSize(400, 200);
         updatePasswordFrame.setLayout(new GridBagLayout());
 
@@ -275,7 +303,7 @@ public class ClientGUI {
 
         updatePasswordFrame.setVisible(true);
     }
-    private void openRegisterWindow() {
+    private void openRegisterWindow(int newX, int newY) {
         // Set up the registration frame with background image
         String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update the path as needed
         registerFrame = new JFrame("Register") {
@@ -286,8 +314,8 @@ public class ClientGUI {
         registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         registerFrame.setSize(550, 550);
         registerFrame.setLayout(new GridBagLayout());
+        registerFrame.setLocation(newX, newY);
         registerFrame.setVisible(true);
-        registerFrame.setLocation(500, 300);
 
         JLabel headingLabel = new JLabel("REGISTER");
         headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
@@ -371,12 +399,13 @@ public class ClientGUI {
         registerFrame.setVisible(true);
     }
 
-    private void openForgottenPassWindow() {
+    private void openForgottenPassWindow(int newX, int newY) {
         String forgottenPassBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update as needed
         forgottenPassFrame = new JFrame("Recovery");
         forgottenPassFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         forgottenPassFrame.setContentPane(new BackgroundPanel(forgottenPassBackgroundPath));
         forgottenPassFrame.setSize(500, 500);
+        forgottenPassFrame.setLocation(newX, newY);
         forgottenPassFrame.setLayout(new GridBagLayout());
 
         JLabel headingLabel = new JLabel("RECOVERY");
@@ -419,6 +448,10 @@ public class ClientGUI {
         forgottenPassFrame.getRootPane().setDefaultButton(recoverButton);
     }
 
+    private void closingWindow(Window window){
+        x = window.getLocation().x;
+        y = window.getLocation().y;
+    }
 }
 
 // first window that pops up should be "connect" i will ask for the IP and the connect button

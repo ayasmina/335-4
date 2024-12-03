@@ -8,7 +8,7 @@ public class Server {
     // Flag to control server state
     private boolean isRunning = true;
     //  Instantiate list for active client threads
-    private static Vector<MultiThread> clientConnections;
+    private Vector<MultiThread> clientConnections;
     //  Socket waits for client connections
     public static ServerSocket serversocket;
     // Int For Next Connection ID
