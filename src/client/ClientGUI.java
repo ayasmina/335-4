@@ -257,7 +257,7 @@ public class ClientGUI {
     private void showUpdatePasswordWindow(int newX, int newY) {
         updatePasswordFrame = new JFrame("Update Password");
         updatePasswordFrame.setLocation(newX, newY);
-        updatePasswordFrame.setSize(400, 200);
+        updatePasswordFrame.setSize(400, 300);
         updatePasswordFrame.setLayout(new GridBagLayout());
 
         JLabel newPasswordLabel = new JLabel("New Password:");
@@ -265,6 +265,21 @@ public class ClientGUI {
         JLabel verifyPasswordLabel = new JLabel("Verify Password:");
         JPasswordField verifyPasswordField = new JPasswordField(20);
         JButton updateButton = new JButton("Update");
+
+        JCheckBox showPasswordCheckbox = new JCheckBox("Show Password");
+        showPasswordCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordCheckbox.isSelected()) {
+                    newPasswordField.setEchoChar((char) 0); // Show the password
+                    verifyPasswordField.setEchoChar((char) 0);
+                } else {
+                    newPasswordField.setEchoChar('*'); // Hide the password
+                    verifyPasswordField.setEchoChar('*');
+                }
+            }
+        });
+
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -277,14 +292,19 @@ public class ClientGUI {
         updatePasswordFrame.add(newPasswordField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         updatePasswordFrame.add(verifyPasswordLabel, gbc);
 
         gbc.gridx = 1;
         updatePasswordFrame.add(verifyPasswordField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        updatePasswordFrame.add(showPasswordCheckbox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         updatePasswordFrame.add(updateButton, gbc);
 
@@ -294,8 +314,14 @@ public class ClientGUI {
 
             if (newPassword.equals(verifyPassword)) {
                 String result = client.updatePassword(newPassword);
-                JOptionPane.showMessageDialog(updatePasswordFrame, result);
-                updatePasswordFrame.dispose();
+                char operation = result.charAt(0);
+                result = result.substring(1);
+                if (operation == '0'){
+                    JOptionPane.showMessageDialog(updatePasswordFrame, result);
+                    updatePasswordFrame.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(updatePasswordFrame, result);
+                }
             } else {
                 JOptionPane.showMessageDialog(updatePasswordFrame, "Passwords do not match!", "Error", JOptionPane.ERROR_MESSAGE);
             }

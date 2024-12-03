@@ -254,7 +254,7 @@ public class Client {
         String response = "";
         passwordIsValid = RegexEmail.validPassword(newPassword);   //  Check valid password
         if (!passwordIsValid) {   //  If password is invalid
-            outputGUI = "Please enter a valid password.";
+            outputGUI = "1Please enter a valid password.";
         } else {
             String request = "7" + username + ":" + newPassword;
             if (clientIsConnected && clientIsLoggedIn) {    //  If Client is connected
@@ -264,14 +264,14 @@ public class Client {
                 char readServerOperation = response.charAt(0);
                 //  Read Server response with first character key
                 if (readServerOperation == '0') {   //  '0'=Success
-                    outputGUI = "Client Logged Out Successfully";
+                    outputGUI = "0Password successfully updated.";
                     System.out.println(outputGUI);  //  Display Logic
                 } else {
-                    outputGUI = "Unsuccessful Update";
+                    outputGUI = "1Unsuccessful Update";
                 }   //  End Else
             }   //  End If
         }   //  End Else
-        return response;
+        return outputGUI;
     }   //  --  End  Update Password Method --
     //  --  Server Application Example Method   --
     public String serverApplication(){
