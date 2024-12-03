@@ -1,4 +1,8 @@
 package client;
+
+import java.io.IOException;
+import java.net.*;
+
 //  Core Program Logic
 //  Client Class creates a connection and allows the user to perform operations
 public class Client {
@@ -28,17 +32,25 @@ public class Client {
             outputGUI = "Already connected to " + HOST;
             System.out.println(outputGUI);    //  Display Logic
         } else {    //  Attempt connection
-            clientConnection = new Network(HOST);   //  Client creates connection request
-            response = clientConnection.send(request); //   Client sends connect request
-            if (response == null) {  //  Failed connection
-                outputGUI = "Error connecting to " + HOST;
-                System.out.println(outputGUI);    //  Display Logic
-                clientIsConnected = false;
-            } else {    //  Successful connection
-                outputGUI = "0Connection successful to " + HOST;
-                System.out.println(outputGUI);   //  Display Logic
-                clientIsConnected = true;
-            }   //  End Else
+            try {
+                clientConnection = new Network(HOST); //  Client creates connection request
+                response = clientConnection.send(request); //   Client sends connect request
+                if (response == null) {  //  Failed connection
+                    outputGUI = "Error connecting to " + HOST;
+                    System.out.println(outputGUI);    //  Display Logic
+                    clientIsConnected = false;
+                } else {    //  Successful connection
+                    outputGUI = "0Connection successful to " + HOST;
+                    System.out.println(outputGUI);   //  Display Logic
+                    clientIsConnected = true;
+                }   //  End Else
+            } catch (UnknownHostException e){
+                outputGUI = "Host " + HOST + " is unavailable.";
+            } catch (SocketTimeoutException e){
+                outputGUI = "Connection to " + HOST + " has timed out.";
+            } catch (IOException e) {
+                outputGUI = "Server Not Available";
+            }
         }   //  End Else
         return outputGUI;
     }   //  --  End Connect Method  --
