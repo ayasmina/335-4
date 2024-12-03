@@ -128,7 +128,8 @@ private void positionFrameInTopRightCorner() {
             });
             serverThread.start();
             isServerRunning = true;
-            statusLabel.setText("Server Status: Running");
+            statusLabel.setText("Server Status: Updating");
+
             startButton.setEnabled(false);
             stopButton.setEnabled(true);
             // Start a thread for periodic updates
@@ -140,11 +141,19 @@ private void positionFrameInTopRightCorner() {
         new Thread(() -> {
             while (isServerRunning) {
                 try {
-                    if (serverReady) {
+                    if (!serverReady) {
+                        serverReady = true;
+                        Thread.sleep(250);
+                        statusLabel.setText("Server Status: Updating.");
+                        Thread.sleep(250);
+                        statusLabel.setText("Server Status: Updating..");
+                        Thread.sleep(250);
+                        statusLabel.setText("Server Status: Updating...");
+                    } else {
+                        statusLabel.setText("Server Status: Running");
                         SwingUtilities.invokeLater(this::updateServerStatus);
                     }
-                    Thread.sleep(2000); // Delay between updates
-                    if (!serverReady) serverReady = true;
+                    Thread.sleep(500); // Delay between updates
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -164,10 +173,12 @@ private void positionFrameInTopRightCorner() {
                 }
 
                 statusLabel.setText("Server Status: Stopped");
+
                 startButton.setEnabled(true);
                 stopButton.setEnabled(false);
                 isServerRunning = false;
                 serverReady = false; // Reset readiness flag
+                clearServerStatus();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                         "Error stopping server: " + e.getMessage(),
@@ -212,6 +223,16 @@ private void positionFrameInTopRightCorner() {
                     "Update Error",
                     JOptionPane.WARNING_MESSAGE);
         }
-
+    }
+    private void clearServerStatus(){
+        registeredAccountsLabel.setText("Registered Accounts: " + 0);
+        connectedAccountsLabel.setText("Connected Accounts: " + 0);
+        loggedAccountsLabel.setText("Logged Accounts: " + 0);
+        int rows = tableModel.getRowCount();
+        int count = 0;
+        while(count < rows){
+            tableModel.removeRow(0);
+            count++;
+        }
     }
 }
