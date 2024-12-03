@@ -258,7 +258,7 @@ public class Server {
                         response = login(username, pass);
                         //System.out.println(response);
                         break;
-                    case '2': // needs register function in Server
+                    case '2':
                         System.out.println("Entering register user case.");
                         // Gathering registration information from the substring
                         String newUser = info[0]; // Assume info[0] contains the username

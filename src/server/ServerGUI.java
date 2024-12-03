@@ -14,6 +14,7 @@ public class ServerGUI extends JFrame {
     private JLabel statusLabel;
     private JLabel registeredAccountsLabel;
     private JLabel connectedAccountsLabel;
+    private JLabel loggedUsersLabel;
 
     private Server serverInstance;
     private Thread serverThread;
@@ -42,11 +43,14 @@ public class ServerGUI extends JFrame {
         statusLabel = new JLabel("Server Status: Stopped");
         registeredAccountsLabel = new JLabel("Registered Accounts: 0");
         connectedAccountsLabel = new JLabel("Connected Accounts: 0");
+        loggedUsersLabel = new JLabel("Logged Accounts: 0");
         statusPanel.add(statusLabel);
         statusPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         statusPanel.add(registeredAccountsLabel);
         statusPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         statusPanel.add(connectedAccountsLabel);
+        statusPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        statusPanel.add(loggedUsersLabel);
         JPanel centeredStatusPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centeredStatusPanel.add(statusPanel);
 
@@ -118,12 +122,14 @@ public class ServerGUI extends JFrame {
                 // Fetch data from the server instance
                 int registeredUsers = serverInstance.getNumberOfRegisteredUsers();
                 int connectedUsers = serverInstance.getNumberOfConnections();
+                int loggedUsers = serverInstance.getNumberOfLoggedInUsers();
 
                 List<String> loggedInUsers = serverInstance.getLoggedInUsers();
                 List<String> lockedOutUsers = serverInstance.getLockedOutUsers();
 
                 registeredAccountsLabel.setText("Registered Accounts: " + registeredUsers);
                 connectedAccountsLabel.setText("Connected Accounts: " + connectedUsers);
+                loggedUsersLabel.setText("Logged Accounts: " + loggedUsers);
 
                 tableModel.setRowCount(0);
                 int maxRows = Math.max(loggedInUsers.size(), lockedOutUsers.size());

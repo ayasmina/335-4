@@ -82,7 +82,7 @@ public class ClientGUI {
     private void showLoginWindow() {
         loginFrame = new JFrame("Login");
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        loginFrame.setSize(400, 300);
+        loginFrame.setSize(450, 400);
         loginFrame.setLayout(new GridBagLayout());
 
         JLabel usernameLabel = new JLabel("Username:");
@@ -90,6 +90,7 @@ public class ClientGUI {
         JLabel passwordLabel = new JLabel("Password:");
         JPasswordField passwordField = new JPasswordField(20);
         JButton loginButton = new JButton("Login");
+        JButton disconnectButton = new JButton("Disconnect");
         JLabel registerLabel = new JLabel("<html><a href='#'>Not registered? Register</a></html>");
         JLabel forgottenPassLabel = new JLabel("<html><a href='#'>Forgot Password?</a></html>");
 
@@ -97,28 +98,33 @@ public class ClientGUI {
         gbc.insets = new Insets(10, 10, 10, 10);
 
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         loginFrame.add(usernameLabel, gbc);
 
         gbc.gridx = 1;
         loginFrame.add(usernameField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         loginFrame.add(passwordLabel, gbc);
 
         gbc.gridx = 1;
         loginFrame.add(passwordField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridwidth = 2;
         loginFrame.add(loginButton, gbc);
 
-        gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        loginFrame.add(disconnectButton, gbc);
+
+        gbc.gridy = 5;
         loginFrame.add(registerLabel, gbc);
 
-        gbc.gridy = 4;
+        gbc.gridy = 6;
         loginFrame.add(forgottenPassLabel, gbc);
 
         loginButton.addActionListener(e -> {
@@ -135,6 +141,13 @@ public class ClientGUI {
                 JOptionPane.showMessageDialog(loginFrame, result, "Login Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        disconnectButton.addActionListener((e -> {
+            String result = client.disconnect();
+            JOptionPane.showMessageDialog(loginFrame,result);
+            loginFrame.dispose();
+            showConnectWindow();
+        }));
 
         registerLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -179,16 +192,23 @@ public class ClientGUI {
         dashboardFrame.add(serverAppButton, gbc);
 
         shutdownButton.addActionListener(e -> {
-            client.shutdown();
-            JOptionPane.showMessageDialog(dashboardFrame, "Shutdown complete.");
-            dashboardFrame.dispose();
+            String result = client.shutdown();
+            char operation = result.charAt(0);
+            result = result.substring(1);
+            if (operation == '0'){
+                JOptionPane.showMessageDialog(dashboardFrame, result);
+                dashboardFrame.dispose();
+                showConnectWindow();
+            } else {
+                JOptionPane.showMessageDialog(dashboardFrame, result);
+            }
         });
 
         updatePasswordButton.addActionListener(e -> showUpdatePasswordWindow());
 
         logoutButton.addActionListener(e -> {
-            client.logout();
-            JOptionPane.showMessageDialog(dashboardFrame, "Logged out.");
+            String result = client.logout();
+            JOptionPane.showMessageDialog(dashboardFrame, result);
             dashboardFrame.dispose();
             showLoginWindow();
         });

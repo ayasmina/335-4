@@ -230,19 +230,19 @@ public class Client {
         response = clientConnection.send(request);  // Send shutdown request
         switch(response.charAt(0)){
             case '0':   //  Successful Shutdown
-                outputGUI = "Shutdown Successful";
+                outputGUI = "0Shutdown Successful";
                 System.out.println(outputGUI);
                 break;
             case '1':   //  Failed Logout
-                outputGUI = "Shutdown Failed due to Faulty Logout";
+                outputGUI = "1Shutdown Failed due to Faulty Logout";
                 System.out.println(outputGUI);
                 break;
             case '2':   //  Failed Disconnect
-                outputGUI = "Shutdown Failed due to Faulty Disconnect";
+                outputGUI = "2Shutdown Failed due to Faulty Disconnect";
                 System.out.println(outputGUI);
                 break;
             default:
-                outputGUI = "Unknown Error";
+                outputGUI = "3Unknown Error";
                 System.out.println(outputGUI);
                 break;
         }   //  End Switch

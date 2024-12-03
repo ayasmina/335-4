@@ -56,8 +56,8 @@ public class MultiThread extends Thread {
 
                             //Closing Streams
                             clientIsConnected = false;
-                            datain.close();
                             server.removeID(id);
+                            datain.close();
 
                             System.out.println("SERVER has disconnected.");
                         } else {
