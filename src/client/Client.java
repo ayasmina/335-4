@@ -239,7 +239,11 @@ public class Client {
         String outputGUI = "";
         String request = "6" + username;
         String response = "";
-        response = clientConnection.send(request);  // Send shutdown request
+        if(username != null){
+            response = clientConnection.send(request);  // Send shutdown request
+        } else {
+            response = "3";
+        }
         switch(response.charAt(0)){
             case '0':   //  Successful Shutdown
                 outputGUI = "0Shutdown Successful";

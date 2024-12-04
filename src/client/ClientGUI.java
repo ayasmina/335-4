@@ -22,28 +22,35 @@ public class ClientGUI {
     }
 
     private void addCloseListener(JFrame frame) {
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Prevent automatic window closing
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); // Disable default close action
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
-                handleWindowClosing(e);  // Pass the event to handleWindowClosing
+                handleWindowClosing(e);
             }
         });
     }
 
     private void handleWindowClosing(java.awt.event.WindowEvent e) {
-        int confirm = JOptionPane.showConfirmDialog(e.getWindow(),  // Use the frame's window for the dialog
+        int confirm = JOptionPane.showConfirmDialog(
+                e.getWindow(), // Use the frame's window for the dialog
                 "Are you sure you want to exit?",
                 "Exit Confirmation",
-                JOptionPane.YES_NO_OPTION);
+                JOptionPane.YES_NO_OPTION
+        );
 
         if (confirm == JOptionPane.YES_OPTION) {
+            System.out.println("YES Option");
             client.shutdown(); // Notify the server about logout
-            System.exit(0);  // Terminate the application
-        }
+            client.disconnect();
+            System.out.println(e);
+            System.exit(0); // Terminate the application
+        } else {
+            // Explicitly consume the event to prevent default behavior
 
-        // No action needed for "No", just let the window stay open
+        }
     }
+
     public ClientGUI() {
         client = new Client();
         preloadBackgrounds();
