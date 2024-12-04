@@ -73,7 +73,6 @@ public class Network {
             dataout.flush(); // send string to server
 
 
-//            // receive response from the Server - automated - rn Server doesnt actually get the message
             rtnmsg = ""; // empty string for response
             do { // read for input while the response string is empty
                 socket.setSoTimeout(5000); // Timeout of 5 seconds - makes it so the client wont wait forever

@@ -240,37 +240,38 @@ public class Server {
         }   //  End For
         return -1;
     }   //  --  End Index Of User Method    -- //
-
     //  --  Parse Input from Network Class Method   -- //
     // Using 0 and 1 for True and False responses in places applicable, extending beyond 0 and 1 when needed
     public String parseInput(String data){
-        System.out.println("Received data: " + data);
+        //System.out.println("Received data: " + data); //  Unit Test
         char operation;
         String result = "";
         String response = "";
         if(data != null) {
             operation = data.charAt(0); // grabbing operation from string
-            System.out.println("1. Operation sent: " + operation);
+            System.out.println("Parsing Client Input - Operation received: " + operation);
             if(!data.isEmpty()) {
-                System.out.println("2. Entering if loop.");
                 result = data.substring(1);
                 String[] info = result.split(":");
-                System.out.println(info.length);
                 String username;
-                System.out.println("3. Remaining info: " + result);
-                switch (operation) {
+                String password;
+                //System.out.println("Entering if loop.");  //  Unit Test
+                //System.out.println("Number of elements received: " + info.length);    //  Unit Test
+                //System.out.println("Remaining info: " + result);  //  Unit Test
+                switch (operation) {    //  Logic to decide server response
+                    // 0
                     case '0':
-                        // we wouldn't get here without the connection working so just say it's working?
-                        response = "0"; // Connection successful
+                        System.out.println("Client Used \"Connect\" \nInput - \"" + result + "\""); //  Display Logic
+                        response = "0"; // Connection Successful (or it would have been failed before here)
                         break;
                     case '1':
-                        System.out.println("Entering login case.");
-                        // gathering user information from the substring
+                        System.out.println("Client Used \"Login\" \nInput - \"" + result + "\"");   //  Display Logic
+                        //  Gathering user information from the substring
                         username = info[0];
-                        String pass = info[1];
-                        System.out.println("User Info: username - " + username + " password - " + pass);
-                        // calling login function here so the response can go back to Network
-                        response = login(username, pass);
+                        password = info[1];
+                        System.out.println("User Info - \nUsername - \"" + username + "\" \nPassword - \"" + password + "\"");
+                        //  Calling login function so the response can go back to Network
+                        response = login(username, password);
                         //System.out.println(response);
                         break;
                     case '2':
@@ -307,8 +308,8 @@ public class Server {
                     case '7':
                         System.out.println("Update Password");
                         username = info[0];
-                        pass = info[1];
-                        response = updatePassword(username, pass);
+                        password = info[1];
+                        response = updatePassword(username, password);
                         break;
                     case '8':
                         System.out.println("Server Application");

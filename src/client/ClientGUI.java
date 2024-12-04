@@ -1,8 +1,10 @@
 package client;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
 
 public class ClientGUI {
     private Client client;
@@ -12,14 +14,43 @@ public class ClientGUI {
 
     public static void main(String[] args) {
         new ClientGUI();
-        new ClientGUI();
     }
+    private void addCloseListener(JFrame frame) {
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                handleWindowClosing();
+            }
+        });
+    }
+
+    private void handleWindowClosing() {
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to exit?",
+                "Exit Confirmation",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try{
+                char success = client.shutdown().charAt(0); // Notify the server about logout
+                if(success != 0){
+                    client.disconnect();
+                }
+            } catch (Exception e){
+                System.out.println("No Connection");
+            }
+            System.exit(0);  // Terminate the application
+        }
+    }   //  --  End Handle Window Closing Method    --
+
     public class BackgroundPanel extends JPanel {
         private Image backgroundImage;
 
-        public BackgroundPanel(String imagePath) {
+        public BackgroundPanel(String imageURL) {
             try {
-                backgroundImage = Toolkit.getDefaultToolkit().getImage(imagePath);
+                // Use ImageIO to load the image synchronously
+                URL url = new URL(imageURL);
+                backgroundImage = ImageIO.read(url);
             } catch (Exception e) {
                 System.err.println("Error loading background image: " + e.getMessage());
             }
@@ -29,18 +60,26 @@ public class ClientGUI {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (backgroundImage != null) {
+                // Draw the background image stretched to fit the panel
                 g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            } else {
+                // Fill with a solid color if the image fails to load
+                g.setColor(Color.RED);
+                g.fillRect(0, 0, getWidth(), getHeight());
             }
         }
     }
-
     public ClientGUI() {
         client = new Client();
         showConnectWindow(500, 300);
-    }
+    }   //  --  End Client GUI Constructor  --
 
     private void showConnectWindow(int newX, int newY) {
+
+        String backgroundPath = "https://raw.githubusercontent.com/ayasmina/335-4/1bd1886e365529b0ce996caecad3a04279c9358d/background.jpg";
         connectFrame = new JFrame("Connect");
+        addCloseListener(connectFrame); //  Listen for closing window
+        connectFrame.setContentPane(new BackgroundPanel(backgroundPath));
         connectFrame.setLocation(newX, newY);
         connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         connectFrame.setSize(400, 200);
@@ -85,6 +124,7 @@ public class ClientGUI {
 
     private void showLoginWindow(int newX, int newY) {
         loginFrame = new JFrame("Login");
+        addCloseListener(loginFrame);   //  Listen for closing window
         loginFrame.setLocation(newX, newY);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(450, 400);
@@ -190,9 +230,10 @@ public class ClientGUI {
 
     private void showDashboardWindow(int newX, int newY) {
         dashboardFrame = new JFrame("Dashboard");
+        addCloseListener(dashboardFrame);   //  Listen for closing window
         dashboardFrame.setLocation(newX, newY);
         dashboardFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        dashboardFrame.setSize(400, 300);
+        dashboardFrame.setSize(450, 400);
         dashboardFrame.setLayout(new GridBagLayout());
 
         JButton shutdownButton = new JButton("Shutdown");
@@ -257,7 +298,7 @@ public class ClientGUI {
     private void showUpdatePasswordWindow(int newX, int newY) {
         updatePasswordFrame = new JFrame("Update Password");
         updatePasswordFrame.setLocation(newX, newY);
-        updatePasswordFrame.setSize(400, 300);
+        updatePasswordFrame.setSize(450, 400);
         updatePasswordFrame.setLayout(new GridBagLayout());
 
         JLabel newPasswordLabel = new JLabel("New Password:");

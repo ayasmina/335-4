@@ -30,6 +30,9 @@ public class ServerGUI extends JFrame {
         //  Start GUI in top right
         positionFrameInTopRightCorner();
 
+        //  Listen for closing window
+        addCloseListener(this);
+
         // Control panel
         JPanel controlPanel = new JPanel();
         startButton = new JButton("Start Server");
@@ -68,6 +71,26 @@ public class ServerGUI extends JFrame {
         add(centeredStatusPanel, BorderLayout.SOUTH);
 
         setupActionListeners();
+    }
+    private void addCloseListener(JFrame frame) {
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                handleWindowClosing();
+            }
+        });
+    }
+
+    private void handleWindowClosing() {
+        int confirm = JOptionPane.showConfirmDialog(null,
+                "Are you sure you want to exit?",
+                "Exit Confirmation",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            stopServer(); // Notify the server about logout
+            System.exit(0);  // Terminate the application
+        }
     }
 /*  Potential Background Element Addition
     public class BackgroundPanel extends JPanel {
@@ -200,7 +223,7 @@ private void positionFrameInTopRightCorner() {
                 List<String> lockedOutUsers = serverInstance.getLockedOutUsers();
 
                 registeredAccountsLabel.setText("Registered Accounts: " + registeredUsers);
-                connectedAccountsLabel.setText("Connected Accounts: " + connectedUsers);
+                connectedAccountsLabel.setText("Connected Clients: " + connectedUsers);
                 loggedAccountsLabel.setText("Logged Accounts: " + loggedUsers);
 
                 tableModel.setRowCount(0);
@@ -226,7 +249,7 @@ private void positionFrameInTopRightCorner() {
     }
     private void clearServerStatus(){
         registeredAccountsLabel.setText("Registered Accounts: " + 0);
-        connectedAccountsLabel.setText("Connected Accounts: " + 0);
+        connectedAccountsLabel.setText("Connected Clients: " + 0);
         loggedAccountsLabel.setText("Logged Accounts: " + 0);
         int rows = tableModel.getRowCount();
         int count = 0;

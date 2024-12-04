@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 public class RegexEmail {
 
     // Email regex (same as before)
-    private static String emailregex = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    private static Pattern emailpattern = Pattern.compile(emailregex);
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+    private static Pattern emailpattern = Pattern.compile(EMAIL_REGEX);
 
     // Modified password regex without special characters
     // The password must have at least one digit, one lowercase letter, one uppercase letter,
     // and must be at least 8 characters long. No special characters are required.
-    private static String passwordregex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z0-9!@#$%^&*(),.?\":{}|<>]{8,}$";
-    private static Pattern passwordpattern = Pattern.compile(passwordregex);
+    private static final String PASSWORD_REGEX = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?\":{}|<>])[A-Za-z0-9!@#$%^&*(),.?\":{}|<>]{8,}$";
+    private static Pattern passwordpattern = Pattern.compile(PASSWORD_REGEX);
     // Validate password based on regex
     public static boolean validPassword(String password) {
         Matcher matcher = passwordpattern.matcher(password);

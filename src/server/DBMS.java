@@ -55,7 +55,7 @@ public class DBMS {
                 int lockedOut = resultSet.getInt("LockedOut");
                 User.userList.add(new User(username, password, email, connected, loggedIn, strikes, lockedOut));
             }
-            System.out.println("User list synchronized successfully.");
+            //System.out.println("User list synchronized successfully.");   //  Unit Test
         } catch (SQLException e) {
             handleSQLException(e);
         }
@@ -123,11 +123,15 @@ public class DBMS {
             System.out.println("Username already exists!");
             return false;
         }
-        String query = "INSERT INTO " + TABLE + " (Username, Password, Email) VALUES (?, ?, ?)";
+        String query = "INSERT INTO " + TABLE + " (Username, Password, Email, Connected, LoggedIn, Strikes, LockedOut) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, user.getUsername());
             ps.setString(2, user.getPassword());
             ps.setString(3, user.getEmail());
+            ps.setInt(4,0);
+            ps.setInt(5,0);
+            ps.setInt(6,0);
+            ps.setInt(7,0);
             ps.executeUpdate();
             syncUserList();
             return true;

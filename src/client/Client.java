@@ -13,7 +13,9 @@ public class Client {
     private boolean clientIsLoggedIn = false;
     private boolean passwordIsValid = false;
     private boolean emailIsValid = false;
+
     public String username;
+
     public Network clientConnection;
     // --   Client Constructor for GUI to build Client Object   --
     public Client() {
@@ -23,7 +25,8 @@ public class Client {
     //  --  CLIENT OPERATIONS   --
 
     //  !!NOTE: Operations are identified via a character key!!
-    //  Operations Key: 0=Connect, 1=Login, 2=Register User, 3=Password Recovery, 4=Logout, 5=Disconnect
+    //  Operations Key: 0=Connect, 1=Login, 2=Register User, 3=Password Recovery,
+    //                  4=Logout, 5=Disconnect, 6=Shutdown, 7=Update Password, 8=Server Application
 
     // --   Connect Clients to Server Method (0)    --
     public String connect(String host) {
@@ -63,7 +66,7 @@ public class Client {
     public String login(String username, String password) {
         //  Login variables
         String outputGUI = "";
-        String request = "1" + username + ":" + password;  //  Append operation character key
+        String request = "1" + username + ":" + password + ":" + "Error";  //  Append operation character key
         String response = "";
         //  Check if Client is connected but not logged in
         if (clientIsConnected && !clientIsLoggedIn) {   //  If Client is connected but not logged in
@@ -180,7 +183,7 @@ public class Client {
         return outputGUI;
     }   //  --  End Recover Password Method --
 
-    //  --  Logout Method (4)   --
+    //  --  Logout (Without Disconnecting) Method (4)   --
     public String logout() {
         //  Logout variables
         String outputGUI = "";
@@ -231,7 +234,7 @@ public class Client {
         return outputGUI;
     }   //  --  End Disconnect Method   --
 
-    //  --  Shutdown Method (6) --
+    //  --  Shutdown Client Method (6) --
     public String shutdown(){
         String outputGUI = "";
         String request = "6" + username;
@@ -284,7 +287,7 @@ public class Client {
         return outputGUI;
     }   //  --  End  Update Password Method --
 
-    //  --  Server Application Example Method   --
+    //  --  Server Application Example Method (8)   --
     public String serverApplication(){
         String outputGUI = "";
         String response = "";
