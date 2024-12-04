@@ -41,7 +41,7 @@ public class ClientGUI {
 
         if (confirm == JOptionPane.YES_OPTION) {
             System.out.println("YES Option");
-            client.shutdown(); // Notify the server about logout
+            client.logout();
             client.disconnect();
             System.out.println(e);
             System.exit(0); // Terminate the application

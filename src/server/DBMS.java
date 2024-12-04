@@ -186,6 +186,16 @@ public class DBMS {
         System.err.println("SQLState: " + e.getSQLState());
         System.err.println("VendorError: " + e.getErrorCode());
     }   //  --  End Handle SQL Exception Method --
+    public int getConnectedUsers(){
+        int total = 0;
+        for(int i = 0; i < User.userList.size(); ++i){
+            User checkUser = selectUser(User.userList.get(i).getUsername());
+            if(checkUser.isConnected()){
+                total++;
+            }
+        }
+        return total;
+    }
     /* Unit Testing
     public void printResultSet(ResultSet resultSet) {
         try {
