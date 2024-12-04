@@ -73,6 +73,7 @@ public class ServerGUI extends JFrame {
         setupActionListeners();
     }
     private void addCloseListener(JFrame frame) {
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Prevent automatic window closing
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
@@ -92,27 +93,6 @@ public class ServerGUI extends JFrame {
             System.exit(0);  // Terminate the application
         }
     }
-/*  Potential Background Element Addition
-    public class BackgroundPanel extends JPanel {
-        private Image backgroundImage;
-
-        public BackgroundPanel(String imagePath) {
-            try {
-                backgroundImage = Toolkit.getDefaultToolkit().getImage(imagePath);
-            } catch (Exception e) {
-                System.err.println("Error loading background image: " + e.getMessage());
-            }
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if (backgroundImage != null) {
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-            }
-        }
-    }
-*/
 private void positionFrameInTopRightCorner() {
         // Get screen dimensions
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

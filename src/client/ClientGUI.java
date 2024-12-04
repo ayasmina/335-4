@@ -20,59 +20,29 @@ public class ClientGUI {
     public static void main(String[] args) {
         new ClientGUI();
     }
+
     private void addCloseListener(JFrame frame) {
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);  // Prevent automatic window closing
         frame.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent e) {
-                handleWindowClosing();
+                handleWindowClosing(e);  // Pass the event to handleWindowClosing
             }
         });
     }
 
-    private void handleWindowClosing() {
-        int confirm = JOptionPane.showConfirmDialog(null,
+    private void handleWindowClosing(java.awt.event.WindowEvent e) {
+        int confirm = JOptionPane.showConfirmDialog(e.getWindow(),  // Use the frame's window for the dialog
                 "Are you sure you want to exit?",
                 "Exit Confirmation",
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            try{
-                char success = client.shutdown().charAt(0); // Notify the server about logout
-                if(success != 0){
-                    client.disconnect();
-                }
-            } catch (Exception e){
-                System.out.println("No Connection");
-            }
+            client.shutdown(); // Notify the server about logout
             System.exit(0);  // Terminate the application
         }
-    }   //  --  End Handle Window Closing Method    --
 
-    public class BackgroundPanel extends JPanel {
-        private ImageIcon backgroundGif;
-
-        public BackgroundPanel(String imageURL) {
-            try {
-                // Use ImageIO to load the image synchronously
-                URL url = new URL(imageURL);
-                backgroundGif = new ImageIcon(url);
-            } catch (Exception e) {
-                System.err.println("Error loading background image: " + e.getMessage());
-            }
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            if (backgroundGif != null) {
-                // Draw the background image stretched to fit the panel
-                backgroundGif.paintIcon(this, g, 0, 0);
-            } else {
-                // Fill with a solid color if the image fails to load
-                g.setColor(Color.WHITE);
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        }
+        // No action needed for "No", just let the window stay open
     }
     public ClientGUI() {
         client = new Client();
