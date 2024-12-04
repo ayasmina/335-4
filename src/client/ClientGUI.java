@@ -1,14 +1,19 @@
 package client;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class ClientGUI {
     private Client client;
+    private final Map<Integer, ImageIcon> backgroundCache = new HashMap<>();
+    private final Random random = new Random();
     private JFrame connectFrame, loginFrame, dashboardFrame, forgottenPassFrame, registerFrame, updatePasswordFrame;
+    boolean alreadyOn = false;
     // Coords for window locations
     int x, y;
 
@@ -44,13 +49,13 @@ public class ClientGUI {
     }   //  --  End Handle Window Closing Method    --
 
     public class BackgroundPanel extends JPanel {
-        private Image backgroundImage;
+        private ImageIcon backgroundGif;
 
         public BackgroundPanel(String imageURL) {
             try {
                 // Use ImageIO to load the image synchronously
                 URL url = new URL(imageURL);
-                backgroundImage = ImageIO.read(url);
+                backgroundGif = new ImageIcon(url);
             } catch (Exception e) {
                 System.err.println("Error loading background image: " + e.getMessage());
             }
@@ -59,27 +64,56 @@ public class ClientGUI {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (backgroundImage != null) {
+            if (backgroundGif != null) {
                 // Draw the background image stretched to fit the panel
-                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+                backgroundGif.paintIcon(this, g, 0, 0);
             } else {
                 // Fill with a solid color if the image fails to load
-                g.setColor(Color.RED);
+                g.setColor(Color.WHITE);
                 g.fillRect(0, 0, getWidth(), getHeight());
             }
         }
     }
     public ClientGUI() {
         client = new Client();
+        preloadBackgrounds();
         showConnectWindow(500, 300);
     }   //  --  End Client GUI Constructor  --
 
-    private void showConnectWindow(int newX, int newY) {
+    private void preloadBackgrounds() {
+        try {
+            backgroundCache.put(1, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ConnectBackground1.gif")));
+            backgroundCache.put(2, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ConnectBackground2.gif")));
+            backgroundCache.put(3, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ConnectBackground3.gif")));
+            backgroundCache.put(4, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ForgotPasswordBackground.gif")));
+            //backgroundCache.put(5, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/LoginBackground.gif")));
+            backgroundCache.put(6, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/NewPasswordBackground.gif")));
+            //backgroundCache.put(7, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/RegisterUserBackground.gif")));
+            backgroundCache.put(8, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/ServerApp.gif")));
+            backgroundCache.put(9, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/ServerDefaultBackground.gif")));
 
-        String backgroundPath = "https://raw.githubusercontent.com/ayasmina/335-4/1bd1886e365529b0ce996caecad3a04279c9358d/background.jpg";
+
+        } catch (Exception e) {
+            System.err.println("Error preloading GIFs: " + e.getMessage());
+        }
+    }
+
+    private void showConnectWindow(int newX, int newY) {
+        // Select a random background from the cache
+        int randomNumber = random.nextInt(1,3); // Randomly select 1, 2, or 3
+        ImageIcon backgroundIcon = backgroundCache.get(randomNumber);
+
         connectFrame = new JFrame("Connect");
-        addCloseListener(connectFrame); //  Listen for closing window
-        connectFrame.setContentPane(new BackgroundPanel(backgroundPath));
+        addCloseListener(connectFrame); // Listen for closing window
+
+        if (backgroundIcon != null) {
+            JLabel backgroundLabel = new JLabel(backgroundIcon);
+            backgroundLabel.setLayout(new GridBagLayout()); // Allow adding components over the image
+            connectFrame.setContentPane(backgroundLabel);   // Set the JLabel as the content pane
+        } else {
+            System.err.println("No background available for: " + randomNumber);
+        }
+
         connectFrame.setLocation(newX, newY);
         connectFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         connectFrame.setSize(400, 200);
@@ -106,25 +140,32 @@ public class ClientGUI {
 
         connectButton.addActionListener(e -> {
             String serverIP = IPField.getText();
-            String result = client.connect(serverIP);
-            char success = result.charAt(0);
-            String output = result.substring(1);
-            if (success == '0') {
-                JOptionPane.showMessageDialog(connectFrame, output);
-                connectFrame.dispose();
-                closingWindow(connectFrame);
-                showLoginWindow(this.x, this.y);
+            if(serverIP.isEmpty()){
+                JOptionPane.showMessageDialog(connectFrame, "Blank IP Field", "Connection Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                JOptionPane.showMessageDialog(connectFrame, result, "Connection Error", JOptionPane.ERROR_MESSAGE);
+                String result = client.connect(serverIP);
+                char success = result.charAt(0);
+                String output = result.substring(1);
+                if (success == '0') {
+                    JOptionPane.showMessageDialog(connectFrame, output);
+                    connectFrame.dispose();
+                    closingWindow(connectFrame);
+                    showLoginWindow(this.x, this.y);
+                } else {
+                    JOptionPane.showMessageDialog(connectFrame, result, "Connection Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
-
         connectFrame.setVisible(true);
     }
 
     private void showLoginWindow(int newX, int newY) {
         loginFrame = new JFrame("Login");
         addCloseListener(loginFrame);   //  Listen for closing window
+        ImageIcon backgroundIcon = backgroundCache.get(5);
+        JLabel backgroundLabel = new JLabel(backgroundIcon);
+        backgroundLabel.setLayout(new GridBagLayout()); // Allow adding components over the image
+        loginFrame.setContentPane(backgroundLabel);   // Set the JLabel as the content pane
         loginFrame.setLocation(newX, newY);
         loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         loginFrame.setSize(450, 400);
@@ -199,7 +240,7 @@ public class ClientGUI {
                 JOptionPane.showMessageDialog(loginFrame, output);
                 loginFrame.dispose();
                 closingWindow(loginFrame);
-                showDashboardWindow(x, y);
+                showDashboardWindow(x, y, 9);
             } else {
                 JOptionPane.showMessageDialog(loginFrame, result, "Login Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -228,40 +269,69 @@ public class ClientGUI {
         loginFrame.setVisible(true);
     }
 
-    private void showDashboardWindow(int newX, int newY) {
+    private void showDashboardWindow(int newX, int newY, int background) {
         dashboardFrame = new JFrame("Dashboard");
-        addCloseListener(dashboardFrame);   //  Listen for closing window
+        addCloseListener(dashboardFrame); // Listen for closing window
+        ImageIcon backgroundIcon = backgroundCache.get(background);
+        JLabel backgroundLabel = new JLabel(backgroundIcon);
+        backgroundLabel.setLayout(new GridBagLayout()); // Allow adding components over the image
+        dashboardFrame.setContentPane(backgroundLabel); // Set the JLabel as the content pane
         dashboardFrame.setLocation(newX, newY);
         dashboardFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         dashboardFrame.setSize(450, 400);
-        dashboardFrame.setLayout(new GridBagLayout());
 
+        // Semi-transparent container for header, buttons, and other components
+        JPanel transparentBox = new JPanel(new GridBagLayout());
+        transparentBox.setOpaque(true); // Make the background visible
+        transparentBox.setBackground(new Color(255, 255, 255, 200)); // Semi-transparent white
+        transparentBox.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
+
+        // Create the "Welcome" label with the specified font
+        JLabel welcomeLabel = new JLabel("Welcome");
+        welcomeLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
+
+        // GridBagConstraints for the components
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2; // Span across two columns if needed
+        transparentBox.add(welcomeLabel, gbc); // Add welcome label to the transparent box
+
+        // Buttons for various actions
         JButton shutdownButton = new JButton("Shutdown");
         JButton updatePasswordButton = new JButton("Update Password");
         JButton logoutButton = new JButton("Log Out");
         JButton serverAppButton = new JButton("Server Application");
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-
+        // Add buttons to transparentBox
+        gbc.gridwidth = 1; // Reset gridwidth for buttons
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        dashboardFrame.add(shutdownButton, gbc);
-
         gbc.gridy = 1;
-        dashboardFrame.add(updatePasswordButton, gbc);
+        transparentBox.add(shutdownButton, gbc);
 
         gbc.gridy = 2;
-        dashboardFrame.add(logoutButton, gbc);
+        transparentBox.add(updatePasswordButton, gbc);
 
         gbc.gridy = 3;
-        dashboardFrame.add(serverAppButton, gbc);
+        transparentBox.add(logoutButton, gbc);
 
+        gbc.gridy = 4;
+        transparentBox.add(serverAppButton, gbc);
+
+        // Add transparentBox to backgroundLabel
+        GridBagConstraints boxConstraints = new GridBagConstraints();
+        boxConstraints.gridx = 0;
+        boxConstraints.gridy = 1;
+        boxConstraints.gridwidth = 2; // Allow box to span both columns
+        backgroundLabel.add(transparentBox, boxConstraints);
+
+        // Shutdown button functionality
         shutdownButton.addActionListener(e -> {
             String result = client.shutdown();
             char operation = result.charAt(0);
             result = result.substring(1);
-            if (operation == '0'){
+            if (operation == '0') {
                 JOptionPane.showMessageDialog(dashboardFrame, result);
                 dashboardFrame.dispose();
                 closingWindow(dashboardFrame);
@@ -271,9 +341,10 @@ public class ClientGUI {
             }
         });
 
-        updatePasswordButton.addActionListener(e ->
-                showUpdatePasswordWindow(x, y));
+        // Update Password button functionality
+        updatePasswordButton.addActionListener(e -> showUpdatePasswordWindow(x, y));
 
+        // Log out button functionality
         logoutButton.addActionListener(e -> {
             String result = client.logout();
             JOptionPane.showMessageDialog(dashboardFrame, result);
@@ -281,74 +352,91 @@ public class ClientGUI {
             showLoginWindow(x, y);
         });
 
-
+        // Server Application button functionality
         serverAppButton.addActionListener(e -> {
             String result = client.serverApplication();
             char success = result.charAt(0);
             String output = result.substring(1);
             if (success == '0') {
                 JOptionPane.showMessageDialog(dashboardFrame, output, "Server Application", JOptionPane.INFORMATION_MESSAGE);
+                dashboardFrame.dispose();
+                showDashboardWindow(x, y, 8);
             } else {
                 JOptionPane.showMessageDialog(dashboardFrame, output, "Server Application Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        // Make the frame visible
         dashboardFrame.setVisible(true);
     }
 
     private void showUpdatePasswordWindow(int newX, int newY) {
         updatePasswordFrame = new JFrame("Update Password");
+        ImageIcon backgroundIcon = backgroundCache.get(6); // Use a cached background
+        JLabel backgroundLabel = new JLabel(backgroundIcon);
+        backgroundLabel.setLayout(new GridBagLayout()); // Allow adding components over the image
+        updatePasswordFrame.setContentPane(backgroundLabel); // Set the JLabel as the content pane
         updatePasswordFrame.setLocation(newX, newY);
         updatePasswordFrame.setSize(450, 400);
-        updatePasswordFrame.setLayout(new GridBagLayout());
 
+        // Semi-transparent container for input fields and buttons
+        JPanel transparentBox = new JPanel(new GridBagLayout());
+        transparentBox.setOpaque(true); // Make the background visible
+        transparentBox.setBackground(new Color(255, 255, 255, 200)); // Semi-transparent white
+        transparentBox.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
+
+        // Labels and input fields
         JLabel newPasswordLabel = new JLabel("New Password:");
         JPasswordField newPasswordField = new JPasswordField(20);
+
         JLabel verifyPasswordLabel = new JLabel("Verify Password:");
         JPasswordField verifyPasswordField = new JPasswordField(20);
+
         JButton updateButton = new JButton("Update");
 
         JCheckBox showPasswordCheckbox = new JCheckBox("Show Password");
-        showPasswordCheckbox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (showPasswordCheckbox.isSelected()) {
-                    newPasswordField.setEchoChar((char) 0); // Show the password
-                    verifyPasswordField.setEchoChar((char) 0);
-                } else {
-                    newPasswordField.setEchoChar('*'); // Hide the password
-                    verifyPasswordField.setEchoChar('*');
-                }
+        showPasswordCheckbox.addActionListener(e -> {
+            if (showPasswordCheckbox.isSelected()) {
+                newPasswordField.setEchoChar((char) 0); // Show the password
+                verifyPasswordField.setEchoChar((char) 0);
+            } else {
+                newPasswordField.setEchoChar('*'); // Hide the password
+                verifyPasswordField.setEchoChar('*');
             }
         });
 
-
+        // Add components to the transparent box
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        updatePasswordFrame.add(newPasswordLabel, gbc);
+        transparentBox.add(newPasswordLabel, gbc);
 
         gbc.gridx = 1;
-        updatePasswordFrame.add(newPasswordField, gbc);
+        transparentBox.add(newPasswordField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        transparentBox.add(verifyPasswordLabel, gbc);
+
+        gbc.gridx = 1;
+        transparentBox.add(verifyPasswordField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        updatePasswordFrame.add(verifyPasswordLabel, gbc);
-
-        gbc.gridx = 1;
-        updatePasswordFrame.add(verifyPasswordField, gbc);
+        gbc.gridwidth = 2;
+        transparentBox.add(showPasswordCheckbox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
-        updatePasswordFrame.add(showPasswordCheckbox, gbc);
+        transparentBox.add(updateButton, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        updatePasswordFrame.add(updateButton, gbc);
+        // Add the transparent box to the background label
+        backgroundLabel.add(transparentBox);
 
+        // Update button functionality
         updateButton.addActionListener(e -> {
             String newPassword = new String(newPasswordField.getPassword());
             String verifyPassword = new String(verifyPasswordField.getPassword());
@@ -357,7 +445,7 @@ public class ClientGUI {
                 String result = client.updatePassword(newPassword);
                 char operation = result.charAt(0);
                 result = result.substring(1);
-                if (operation == '0'){
+                if (operation == '0') {
                     JOptionPane.showMessageDialog(updatePasswordFrame, result);
                     updatePasswordFrame.dispose();
                 } else {
@@ -373,32 +461,31 @@ public class ClientGUI {
 
     private void openRegisterWindow(int newX, int newY) {
         // Set up the registration frame with background image
-        String registerBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update the path as needed
-        registerFrame = new JFrame("Register") {
-            {
-                setContentPane(new BackgroundPanel(registerBackgroundPath));
-            }
-        };
+        registerFrame = new JFrame("Register");
+        ImageIcon backgroundIcon = backgroundCache.get(7);
+        JLabel backgroundLabel = new JLabel(backgroundIcon);
+        backgroundLabel.setLayout(new GridBagLayout()); // Allow adding components over the image
+        registerFrame.setContentPane(backgroundLabel);   // Set the JLabel as the content pane
         registerFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        registerFrame.setSize(550, 550);
+        registerFrame.setSize(450, 400);
         registerFrame.setLayout(new GridBagLayout());
         registerFrame.setLocation(newX, newY);
         registerFrame.setVisible(true);
 
-        JLabel headingLabel = new JLabel("REGISTER");
+        JLabel headingLabel = new JLabel("Register New User");
         headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
         headingLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        headingLabel.setForeground(Color.BLUE);
+        headingLabel.setForeground(Color.BLACK);
 
         JLabel emailLabel = new JLabel("Email:");
-        emailLabel.setForeground(Color.LIGHT_GRAY);
+        emailLabel.setForeground(Color.BLACK);
 
         JPasswordField passwordField = new JPasswordField(20);
         JLabel usernameLabel = new JLabel("Username:");
-        usernameLabel.setForeground(Color.LIGHT_GRAY);
+        usernameLabel.setForeground(Color.BLACK);
         JTextField usernameField = new JTextField(20);
         JLabel passwordLabel = new JLabel("Password:");
-        passwordLabel.setForeground(Color.LIGHT_GRAY);
+        passwordLabel.setForeground(Color.BLACK);
         JTextField emailField = new JTextField(20);
         JButton registerButton = new JButton("Register");
 
@@ -485,49 +572,72 @@ public class ClientGUI {
     }
 
     private void openForgottenPassWindow(int newX, int newY) {
-        String forgottenPassBackgroundPath = "/Users/yasmine/Downloads/imagess.jpeg"; // Update as needed
         forgottenPassFrame = new JFrame("Recovery");
         forgottenPassFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        forgottenPassFrame.setContentPane(new BackgroundPanel(forgottenPassBackgroundPath));
-        forgottenPassFrame.setSize(500, 500);
+        ImageIcon backgroundIcon = backgroundCache.get(4); // Use cached background
+        JLabel backgroundLabel = new JLabel(backgroundIcon);
+        backgroundLabel.setLayout(new GridBagLayout()); // Allow adding components over the image
+        forgottenPassFrame.setContentPane(backgroundLabel); // Set the JLabel as the content pane
+
+        forgottenPassFrame.setSize(450, 400);
         forgottenPassFrame.setLocation(newX, newY);
-        forgottenPassFrame.setLayout(new GridBagLayout());
 
-        JLabel headingLabel = new JLabel("RECOVERY");
+        // Semi-transparent container for input fields and buttons
+        JPanel transparentBox = new JPanel(new GridBagLayout());
+        transparentBox.setOpaque(true); // Ensure the background is visible
+        transparentBox.setBackground(new Color(255, 255, 255, 200)); // Semi-transparent white
+        transparentBox.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
+
+        // Labels and input fields
+        JLabel headingLabel = new JLabel("Recover Password");
         headingLabel.setFont(new Font("Times New Roman", Font.BOLD, 24));
-        headingLabel.setForeground(Color.BLUE);
+        headingLabel.setForeground(Color.BLACK);
 
+        JLabel usernameLabel = new JLabel("Please Enter Username:");
         JTextField usernameField = new JTextField(20);
         JButton recoverButton = new JButton("Recover");
 
+        // Set consistent styling for the button
+        recoverButton.setFont(new Font("Arial", Font.PLAIN, 14)); // Font style and size
+        recoverButton.setMargin(new Insets(10, 20, 10, 20)); // Padding around the text
+        recoverButton.setPreferredSize(new Dimension(200, 40)); // Button size
+        recoverButton.setBackground(Color.WHITE); // Set the background color to white
+        recoverButton.setForeground(Color.BLACK); // Set the text color to black
+        recoverButton.setFocusPainted(false); // Remove the focus border
+
+        // Add components to the transparentBox
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-
         gbc.gridx = 0;
         gbc.gridy = 0;
-        forgottenPassFrame.add(headingLabel, gbc);
+        transparentBox.add(headingLabel, gbc);
 
         gbc.gridy++;
-        forgottenPassFrame.add(new JLabel("Username:"), gbc);
+        transparentBox.add(usernameLabel, gbc);
 
         gbc.gridy++;
-        forgottenPassFrame.add(usernameField, gbc);
+        transparentBox.add(usernameField, gbc);
 
         gbc.gridy++;
-        forgottenPassFrame.add(recoverButton, gbc);
+        transparentBox.add(recoverButton, gbc);
 
-        recoverButton.addActionListener((ActionEvent e) -> {
+        // Add transparentBox to backgroundLabel
+        GridBagConstraints boxConstraints = new GridBagConstraints();
+        boxConstraints.gridx = 0;
+        boxConstraints.gridy = 0;
+        backgroundLabel.add(transparentBox, boxConstraints);
+
+        // Recover button functionality
+        recoverButton.addActionListener(e -> {
             String username = usernameField.getText();
             if (!username.isEmpty()) {
                 String result = client.recoverPassword(username);
                 char operation = result.charAt(0);
                 result = result.substring(1);
                 if (operation == '0') {
-                    System.out.println(result);
                     JOptionPane.showMessageDialog(forgottenPassFrame, result);
                     forgottenPassFrame.dispose();
                 } else {
-                    System.out.println(result);
                     JOptionPane.showMessageDialog(forgottenPassFrame, result);
                 }
             } else {
@@ -535,10 +645,12 @@ public class ClientGUI {
             }
         });
 
-        forgottenPassFrame.setVisible(true);
+        // Set the default button for the frame
         forgottenPassFrame.getRootPane().setDefaultButton(recoverButton);
-    }
 
+        // Make the frame visible
+        forgottenPassFrame.setVisible(true);
+    }
     private void closingWindow(Window window){
         x = window.getLocation().x;
         y = window.getLocation().y;

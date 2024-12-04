@@ -49,7 +49,7 @@ public class Server {
             userDB.logoutAll(userDB);
             userDB.disconnectAll(userDB);
 
-            System.out.println("Server stopped.");
+            System.out.println("Server Stopped");
         } catch (IOException e) {
             System.out.println(e);
         }
@@ -64,15 +64,16 @@ public class Server {
     private void peerConnection(Socket socket) {
         //  Create a thread communication when client arrives
         Network networkConnection = new Network(nextId, socket);
-        System.out.println(networkConnection.getId());
         MultiThread connection = new MultiThread(networkConnection, socket, this);
-        System.out.println(connection.getId());
+        //System.out.println(networkConnection.getId());    //  Unit Test
+        //System.out.println(connection.getId());   //  Unit Test
+
         //  Add the new thread to the active client threads list
         clientConnections.add(connection);
         //  Start the thread
         connection.start();
         //  Place some text in the area to let the server operator know what is going on
-        System.out.println("SERVER: connection received for id " + nextId + "\n");
+        System.out.println("SERVER: New Client Connection Received -\nNew Thread ID - \"" + nextId + "\"\n");
         ++nextId;
     }   //  --  End Peer Connection Method  -- //
 
@@ -86,7 +87,7 @@ public class Server {
                 // Remove ID from the clientConnections list and the connection thread will terminate itself
                 clientConnections.remove(i);
                 //  Place some text in the area to let the server operator know what is going on
-                System.out.println("SERVER: connection closed for client id " + ID + "\n");
+                System.out.println("SERVER: Client Connection Closed\nNew Thread ID - \"" + ID + "\"\n");
                 break;
             }   //  End If
         }   //  End For
@@ -96,7 +97,7 @@ public class Server {
     public void listen() {
         try {
             serversocket = new ServerSocket(PORT);
-            System.out.println("Server started on port " + PORT);
+            System.out.println("New Server Object Started: Port - " + PORT + "\nReady For Client Connections\n");
             while (isRunning) { //  Control infinite loop
                 try {
                     Socket socket = serversocket.accept(); // Accept client connections
@@ -104,7 +105,7 @@ public class Server {
                     peerConnection(socket);
                 } catch (IOException e) {
                     if (!isRunning) {
-                        System.out.println("Server socket closed.");
+                        System.out.println("Server Socket Closed");
                         break; // Exit the loop if the server is stopping
                     } else {
                         System.out.println(e);
@@ -121,7 +122,7 @@ public class Server {
             } catch (IOException e) {
                 System.out.println(e);
             }   //  End Catch
-            System.out.println("Server stopped listening.");
+            //System.out.println("Server stopped listening.");  //  Unit Test
         }   //  End Finally
     }   //  --  End Listen Method   -- //
 
@@ -162,7 +163,7 @@ public class Server {
             User account = new User(username, password, email); //  Create new user
             userDB.registerUser(account);   //  Add new user to database
             userDB.syncUserList();  //  Sync database to array list
-            System.out.println(User.userList.size());
+            //System.out.println(User.userList.size()); //  Unit Test
             response = "0"; // successful registration
         }   //  End Else
         return response;
@@ -176,11 +177,11 @@ public class Server {
         if(index == -1) response = "1"; //  Username does not exists
         else {
             User account = User.userList.get(index);
-            String address = account.getEmail(); // getting user email
-            //System.out.println(address);    //  Display Logic
+            String address = account.getEmail(); // Getting user email
+            //System.out.println(address);    //  Unit Test
             String newPassword = email.generateEmail(address); // sending email
-            //System.out.println(newPassword);    //  Display Logic
-            userDB.updateUserPassword(account, newPassword, userDB);    // setting accounts password to temp password
+            //System.out.println(newPassword);    //  Unit Test
+            userDB.updateUserPassword(account, newPassword, userDB);    //  Setting accounts password to temp password
             response = "0"; //  Sending back to parseInput
         }   //  End Else
         return response;
@@ -261,66 +262,67 @@ public class Server {
                 switch (operation) {    //  Logic to decide server response
                     // 0
                     case '0':
-                        System.out.println("Client Used \"Connect\" \nInput - \"" + result + "\""); //  Display Logic
+                        System.out.println("Client Used \"Connect\"\nClient Input - \"" + result + "\""); //  Display Logic
                         response = "0"; // Connection Successful (or it would have been failed before here)
                         break;
                     case '1':
-                        System.out.println("Client Used \"Login\" \nInput - \"" + result + "\"");   //  Display Logic
+                        System.out.println("Client Used \"Login\" \nClient Input - \"" + result + "\"");   //  Display Logic
                         //  Gathering user information from the substring
                         username = info[0];
                         password = info[1];
-                        System.out.println("User Info - \nUsername - \"" + username + "\" \nPassword - \"" + password + "\"");
+                        System.out.println("User Info - \nUsername - \"" + username + "\"\nPassword - \"" + password + "\"");
                         //  Calling login function so the response can go back to Network
                         response = login(username, password);
-                        //System.out.println(response);
+                        //System.out.println(response); //  Unit Test
                         break;
                     case '2':
-                        System.out.println("Entering register user case.");
+                        System.out.println("Client Used \"Register\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         // Gathering registration information from the substring
                         String newUser = info[0]; // Assume info[0] contains the username
                         String newPass = info[1]; // Assume info[1] contains the password
-                        String newEmail = info[2];
-                        System.out.println("Registering user: username - " + newUser + ", password - " + newPass + ", email - " + newEmail);
+                        String newEmail = info[2];  //  Assume info[2] contains email
+                        System.out.println("New User Info - \nUsername - \"" + newUser + "\"\nPassword - \"" + newPass + "\"\nEmail - \"" + newEmail + "\"");
                         // Calling register function and storing the response
                         response = register(newUser, newPass, newEmail);
                         // Optionally print or log the response for debugging purposes
-                        System.out.println("Register response: " + response);
+                        //System.out.println("Register response: " + response); //  Unit Test
                         break;
                     case '3':
-                        System.out.println("Entering passRec.");
+                        System.out.println("Client Used \"Recover Password\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         username = info[0];
                         response = passwordRecovery(username);
                         break;
                     case '4':
-                        System.out.println("Logout");
+                        System.out.println("Client Used \"Logout\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         username = info[0];
                         response = logout(username);
                         break;
                     case '5':
-                        System.out.println("Disconnect");
+                        System.out.println("Client Used \"Disconnect\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         response = "5";
                         break;
                     case '6':
-                        System.out.println("Shutdown");
+                        System.out.println("Client Used \"Shutdown\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         username = info[0];
                         response = shutdown(username);
                         break;
                     case '7':
-                        System.out.println("Update Password");
+                        System.out.println("Client Used \"Update Password\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         username = info[0];
                         password = info[1];
                         response = updatePassword(username, password);
                         break;
                     case '8':
-                        System.out.println("Server Application");
+                        System.out.println("Client Used \"Server Application\"\nClient Input - \"" + result + "\"");    //  Display Logic
                         response = serverApplication();
                         break;
-                    default : // in case it's not entering a case for some reason so we know
-                        response = ("Error with switch loop.");
+                    default : // In case the operation is not recognized for some reason
+                        System.out.println("Client Used Unknown Operation \"" + operation + "\"\nClient Input - \"" + result + "\"");    //  Display Logic
+                        response = (-1 + "ERROR parseInput: Unknown/Unrecognized Operation Requested");
                 }   //  End Switch (operation)
             }   //  End If (data length > 1)
         }   //  End If (Data is not null)
-        System.out.println("SERVER sending: " + response);
+        System.out.println("SERVER: Server.parseInput() - sending: " + response);
         return response;
     }
 

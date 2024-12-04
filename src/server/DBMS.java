@@ -31,7 +31,7 @@ public class DBMS {
             statement = connection.createStatement();
             result = statement.executeQuery("SELECT VERSION()");
             if (result.next()) {
-                System.out.println("MySQL version: " + result.getString(1) + "\n=====================\n");
+                //System.out.println("MySQL version: " + result.getString(1) + "\n=====================\n");    //  Unit Test
             }   //  End If
         }   //  End Try
         catch (SQLException ex) {

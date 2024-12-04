@@ -166,15 +166,15 @@ public class Client {
             char readServerOperation = response.charAt(0);
             switch (readServerOperation) {  //  Read Server response with first character key
                 case '0':   //  '0'=Success
-                    outputGUI = "Temporary password sent to the email associated with username:\n" + username;
+                    outputGUI = "0Temporary password sent to the email associated with username:\n" + username;
                     System.out.println(outputGUI);  //  Display Logic
                     break;
                 case '1':   //  '1'=Failed, no matching usernames in database
-                    outputGUI = "No account with that user exists.";
+                    outputGUI = "1No account with that user exists.";
                     System.out.println(outputGUI);  //  Display Logic
                     break;
                 default:    //  Failed for some other reason
-                    outputGUI = "An error occurred.";
+                    outputGUI = -1 + "An error occurred.";
                     System.out.println(outputGUI);  //  Display Logic
             }   //  End Switch
         } else {    //  If Client is not connected
@@ -258,6 +258,8 @@ public class Client {
                 System.out.println(outputGUI);
                 break;
         }   //  End Switch
+        clientIsLoggedIn = false;
+        clientIsConnected = false;
         return outputGUI;
     }   //  --  End Shutdown Method --
 
