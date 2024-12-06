@@ -63,9 +63,9 @@ public class ClientGUI {
             backgroundCache.put(2, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ConnectBackground2.gif")));
             backgroundCache.put(3, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ConnectBackground3.gif")));
             backgroundCache.put(4, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/ForgotPasswordBackground.gif")));
-            //backgroundCache.put(5, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/LoginBackground.gif")));
+            backgroundCache.put(5, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/LoginBackground.gif")));
             backgroundCache.put(6, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/NewPasswordBackground.gif")));
-            //backgroundCache.put(7, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/RegisterUserBackground.gif")));
+            backgroundCache.put(7, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/54b8694187f281efc4c680940b31dfad0a85ce7c/RegisterUserBackground.gif")));
             backgroundCache.put(8, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/ServerApp.gif")));
             backgroundCache.put(9, new ImageIcon(new URL("https://raw.githubusercontent.com/ayasmina/335-4/47d97f9e32d1d5f4aff4a44f22801968f43d3782/ServerDefaultBackground.gif")));
 

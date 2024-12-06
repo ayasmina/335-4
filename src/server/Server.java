@@ -325,8 +325,6 @@ public class Server {
         System.out.println("SERVER: Server.parseInput() - sending: " + response);
         return response;
     }
-
-
     public synchronized List<String> getLoggedInUsers() {
         List<String> loggedInUsers = new ArrayList<>();
         for (User account : User.userList) {
